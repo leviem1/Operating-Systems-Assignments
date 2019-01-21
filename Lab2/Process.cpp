@@ -15,7 +15,11 @@ Process::Process(const std::string &filename) {
     if (!file || !file->is_open()) {
         throw std::runtime_error("File could not be opened");
     }
+    
+    line = 0;
  }
+
+
 
 Process::~Process() {
     if (file && file->is_open()) {
