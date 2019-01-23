@@ -58,10 +58,28 @@ void Process::Exec(){
             else if(word == ""){
                 std::cout << '\n';
             }
+            //now we have to deal with commands
+            else if(word != ""){
+                //store the memory address for use and then move to next word 
+                //determine which command to execute
+                std::string memAddress = word;
+                s >> word;
+                //memsize command first line non commented in file
+                if (word == "memsize"){
+                    
+                } 
+                //TODO: Levi -> you can start from here
+                else if (word == "cmp"){
+                    
+                }
+            
+                
+                
+            }
             //TODO: rest of commands
             else {
                 std::cout << "This line not addresses yet. " << '\n';
-            }
+            } 
             
             //increments the counter for line. Leave at the end
             
