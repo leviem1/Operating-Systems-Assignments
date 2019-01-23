@@ -53,6 +53,10 @@ void Process::Exec(){
                   } while (s);
                   std::cout << '\n';
                         
+            } 
+            //print blanks lines where applicable
+            else if(word == ""){
+                std::cout << '\n';
             }
             //TODO: rest of commands
             else {
