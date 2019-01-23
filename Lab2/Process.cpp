@@ -16,7 +16,8 @@ Process::Process(const std::string &filename) {
         throw std::runtime_error("File could not be opened");
     }
     
-    line = 0;
+    line = 1;
+   
  }
 
 
@@ -28,4 +29,40 @@ Process::~Process() {
     
     delete file;
     file = nullptr;
+}
+
+void Process::Exec(){
+    
+    
+     //extracts the lines from the file one at a time and performs commands
+        std::string readLine = "";
+        while (getline (*file, readLine)){
+            //prints out the line number of the command being read in decimal
+            std::cout << std::dec << line << ":";
+            
+            //allows us to look at the words in the line one at a time 
+            std::istringstream s(readLine); 
+            std::string word; 
+            s >> word;
+                //search out the lines with comments
+            if (word == "*"){
+                 std::cout << "*";
+                  do { 
+                      s >> word;
+                      std::cout << word << " ";
+                  } while (s);
+                  std::cout << '\n';
+                        
+            }
+            //TODO: rest of commands
+            else {
+                std::cout << "This line not addresses yet. " << '\n';
+            }
+            
+            //increments the counter for line. Leave at the end
+            
+            line ++;
+            
+        }
+   
 }

@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
     }
     
     Process p(argv[1]);
+    p.Exec();
 
     return 0;
 }

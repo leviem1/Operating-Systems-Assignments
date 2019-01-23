@@ -9,6 +9,7 @@
 #define PROCESS_H
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <fstream>
 #include <cstdint>
@@ -25,6 +26,9 @@ public:
     Process& operator=(const Process& other) = delete;
     Process& operator=(Process&& other) = delete;
     ~Process();
+    
+    void Exec();
+    
 private:
     std::fstream *file;
     std::uint64_t line;
