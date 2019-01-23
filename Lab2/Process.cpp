@@ -33,7 +33,6 @@ Process::~Process() {
 
 void Process::Exec(){
     
-    
      //extracts the lines from the file one at a time and performs commands
         std::string readLine = "";
         while (getline (*file, readLine)){
@@ -47,10 +46,10 @@ void Process::Exec(){
                 //search out the lines with comments
             if (word == "*"){
                  std::cout << "*";
-                  do { 
+                  while (s) { 
                       s >> word;
                       std::cout << word << " ";
-                  } while (s);
+                  }
                   std::cout << '\n';
                         
             } 
@@ -58,35 +57,31 @@ void Process::Exec(){
             else if(word == ""){
                 std::cout << '\n';
             }
+            
             //now we have to deal with commands
             else {
                 //store the memory address for use and then move to next word 
                 //determine which command to execute
                 std::string memAddress = word;
                 s >> word;
+                
                 //memsize command first line non commented in file
                 if (word == "memsize"){
-                    
-                    //convert the string to an int so that we can use it
-                    std::istringstream itos(memAddress); 
-                    int check = 0;
-                    itos >> check;
-                    
-                    //check that it follows program constraints
-                    if (check > 4000000){
-                        throw std::runtime_error{ "Error: memsize command address size is too large"};
-                    }
-                    //resize the vector
-                   mem->resize(check);
-                    
-                    //keep the formatting
-                    std::cout << '\n';
+                    memsize(memAddress);
                 } 
+                
                 //TODO: Levi -> you can start from here
                 else if (word == "cmp"){
                     std::cout << '\n';
                 }
                 
+                //this branch adds dealing with the set command
+                else if (word == "set"){
+                    
+                    std::cout << '\n';
+                }
+              
+                //This is our catch all until everything is done
                 else {
                      std::cout << "This line not addressed yet. " << '\n';
                 }
@@ -101,5 +96,24 @@ void Process::Exec(){
             line ++;
             
         }
+       
    
+}
+
+void Process::memsize(std::string address){
+    //convert the string to an int so that we can use it
+    std::istringstream itos(address); 
+    int check = 0;
+    itos >> check;
+                    
+    //check that it follows program constraints
+    if (check > 4000000){
+        throw std::runtime_error{ "Error: memsize command address size is too large"};
+    }
+    //resize the vector
+    mem->resize(check);
+                    
+    //keep the formatting by printing
+    std::cout << std::dec << check << " memsize";
+    std::cout << '\n';
 }

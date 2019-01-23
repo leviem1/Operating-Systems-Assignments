@@ -33,6 +33,8 @@ private:
     std::fstream *file;
     std::uint64_t line;
     std::vector<uint8_t> *mem;
+    
+    void memsize(std::string address);
 };
 
 #endif /* PROCESS_H */
