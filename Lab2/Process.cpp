@@ -59,7 +59,7 @@ void Process::Exec(){
                 std::cout << '\n';
             }
             //now we have to deal with commands
-            else if(word != ""){
+            else {
                 //store the memory address for use and then move to next word 
                 //determine which command to execute
                 std::string memAddress = word;
@@ -67,20 +67,35 @@ void Process::Exec(){
                 //memsize command first line non commented in file
                 if (word == "memsize"){
                     
+                    //convert the string to an int so that we can use it
+                    std::istringstream itos(memAddress); 
+                    int check = 0;
+                    itos >> check;
+                    
+                    //check that it follows program constraints
+                    if (check > 4000000){
+                        throw std::runtime_error{ "Error: memsize command address size is too large"};
+                    }
+                    //resize the vector
+                   mem->resize(check);
+                    
+                    //keep the formatting
+                    std::cout << '\n';
                 } 
                 //TODO: Levi -> you can start from here
                 else if (word == "cmp"){
-                    
+                    std::cout << '\n';
+                }
+                
+                else {
+                     std::cout << "This line not addressed yet. " << '\n';
                 }
             
                 
                 
             }
             //TODO: rest of commands
-            else {
-                std::cout << "This line not addresses yet. " << '\n';
-            } 
-            
+           
             //increments the counter for line. Leave at the end
             
             line ++;
