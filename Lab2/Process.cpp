@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <sstream>
 
+
 Process::Process(const std::string &filename) {
     file = new std::fstream();
     
@@ -100,7 +101,8 @@ void Process::Exec(){
 void Process::memsize(int address){
     //check that it follows program constraints
     if (address > 4000000){
-        throw std::runtime_error{ "Error: memsize command address size is too large"};
+        throw std::runtime_error{ "Error: memsize command address "
+                "size is too large"};
     }
     
     //initialize and fill vector with zeros
