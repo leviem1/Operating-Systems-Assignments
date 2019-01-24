@@ -20,6 +20,9 @@ Process::Process(const std::string &filename) {
     }
     
     line = 1;
+    
+    mem = new std::vector<std::uint8_t>;
+    
  }
 
 
@@ -75,7 +78,7 @@ void Process::Exec(){
             int value;
             
             //collect all the values that we need to set into a vector
-            while(s && s.good()){
+            while(s){
                 s >> std::hex >> value;
                 v.push_back(value);
             }
@@ -119,7 +122,10 @@ void Process::memsize(int address){
     }
     
     //initialize and fill vector with zeros
-    mem = new std::vector<std::uint8_t>(address, 0);
+    mem->resize(address);
+    for(int i = 0; i < mem->size() - 1; i++){
+        mem->at(i) = 0;
+    }
 }
 
 void Process::cmp(int address1, int address2, int count) {
@@ -145,7 +151,7 @@ void Process::cmp(int address1, int address2, int count) {
 
 void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
-    for(int offset = 0; offset < v.size(); offset++){
+    for(int offset = 0; offset < v.size() - 1; offset++){
         mem->at(address + offset) = v.at(offset);
     }
 }
