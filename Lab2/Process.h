@@ -36,6 +36,7 @@ private:
     void memsize(int);
     void cmp(int, int, int);
     void fill(int, int, int);
+    void dup(int, int, int);
 };
 
 #endif /* PROCESS_H */

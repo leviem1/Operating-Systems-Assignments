@@ -28,8 +28,11 @@ Process::~Process() {
         file->close();
     }
     
+    if (mem) delete mem;
+    
     delete file;
     file = nullptr;
+    mem = nullptr;
 }
 
 void Process::Exec(){
@@ -79,6 +82,11 @@ void Process::Exec(){
         }
         
         else if (word == "dup") {
+            int dest_address;
+            int count;
+            s >> std::hex >> dest_address;
+            s >> std::hex >> count;
+            dup(memAddress, dest_address, count);
         }
         
         else if (word == "print") {
@@ -123,4 +131,10 @@ void Process::cmp(int address1, int address2, int count) {
 
 void Process::fill(int address, int value, int count) {
     std::fill_n(mem->begin() + address, count, value);
+}
+
+void Process::dup(int src_address, int dest_address, int count) {
+    for (int i = 0; i < count; i++) {
+        mem->at(dest_address + count) = mem->at(src_address + count);
+    }
 }
