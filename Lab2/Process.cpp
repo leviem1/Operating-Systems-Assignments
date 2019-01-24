@@ -71,7 +71,7 @@ void Process::Exec(){
 
         //this branch adds dealing with the set command
         else if (word == "set"){
-            std::vector<int> v;
+            std::vector<std::uint8_t> v;
             int value;
             //collect all the values that we need to set into a vector
             while(s){
@@ -100,7 +100,7 @@ void Process::Exec(){
         
         else if (word == "print") {
             int count;
-            s >> count;
+            s >> std::hex >> count;
             
             print(memAddress, count);
         }
@@ -118,7 +118,7 @@ void Process::memsize(int address){
     }
     
     //initialize and fill vector with zeros
-    mem = new std::vector<uint8_t>(address, 0);
+    mem = new std::vector<std::uint8_t>(address, 0);
 }
 
 void Process::cmp(int address1, int address2, int count) {
@@ -128,21 +128,22 @@ void Process::cmp(int address1, int address2, int count) {
         //convenience variables for cleaner code
         int addressA = address1 + offset;
         int addressB = address2 + offset;
-        uint8_t valA = mem->at(addressA);
-        uint8_t valB = mem->at(addressB);
+        int valA = mem->at(addressA);
+        int valB = mem->at(addressB);
         
         //if mismatch found, print information
         if (valA != valB) {
-            std::cerr << "cmp error, addr1 = " << std::hex << addressA
-                    << ", value = " << std::hex << valA
-                    << ", addr2 = " << std::hex << addressB
-                    << ", value = " << std::hex << valB
-                    << "\n";
+            std::cerr << "cmp error, addr1 = " << std::setfill('0')
+                    << std::setw(7) << std::hex << addressA << ", value = "
+                    << std::setfill('0') << std::setw(2) << std::hex << valA
+                    << ", addr2 = " << std::setfill('0') << std::setw(7)
+                    << std::hex << addressB << ", value = " << std::setfill('0')
+                    << std::setw(2) << std::hex << valB << "\n";
         }
     }
 }
 
-void Process::set(int address, std::vector<int> &v){
+void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
     for(int offset = 0; offset < v.size() - 1; offset ++){
         mem->at(address + offset) = v.at(offset);
@@ -164,10 +165,10 @@ void Process::print(int address, int count){
    
     int totalCount = 0;
     
-    while (totalCount <= count ){
+    while (totalCount < count ){
         //set up the header for each line of 16 stating the address correctly
         std::stringstream s;
-        s << std::setfill ('0') << std::setw (7) << address + totalCount << ": ";
+        s << std::setfill('0') << std::setw(7) << std::hex << address + totalCount << ":";
         std::cout << s.str();
         
         for(int i = 0; i < 16; i ++){
@@ -177,14 +178,14 @@ void Process::print(int address, int count){
             }
             
             std::stringstream s1;
-            s1 << std::setfill ('0') << std::setw (2) << mem->at(address + totalCount);
-            std::cout << s1.str() << " ";
+            s1 << std::setfill('0') << std::setw(2) << std::hex << (int) mem->at(address + totalCount);
+            std::cout << " " << s1.str();
             
             //increment the counters
-            totalCount ++;
+            totalCount++;
         }
 
-        std::cout << '\n';
+        std::cout << "\n";
     }
 
     

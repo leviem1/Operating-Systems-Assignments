@@ -44,7 +44,7 @@ public:
 private:
     std::fstream *file;
     std::uint64_t line;
-    std::vector<uint8_t> *mem;
+    std::vector<std::uint8_t> *mem;
     
     /* memsize - addresses behavior when encountering command memsize
      * @param address - refers to the size of address space to set vector
@@ -65,7 +65,7 @@ private:
      * @param v - a vector containing the list of values to add
      * @return - void
      */
-    void set(int address, std::vector<int> &v);
+    void set(int address, std::vector<std::uint8_t> &v);
     
     /* fill - puts count number of some value starting at an address
      * @param address - the starting address
