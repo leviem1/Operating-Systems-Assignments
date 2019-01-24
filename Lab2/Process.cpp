@@ -17,7 +17,6 @@ Process::Process(const std::string &filename) {
     }
     
     line = 1;
-   
  }
 
 
@@ -32,88 +31,83 @@ Process::~Process() {
 }
 
 void Process::Exec(){
-    
-     //extracts the lines from the file one at a time and performs commands
-        std::string readLine = "";
-        while (getline (*file, readLine)){
-            //prints out the line number of the command being read in decimal
-            std::cout << std::dec << line << ":";
-            
-            //allows us to look at the words in the line one at a time 
-            std::istringstream s(readLine); 
-            std::string word; 
-            s >> word;
-                //search out the lines with comments
-            if (word == "*"){
-                 std::cout << "*";
-                  while (s) { 
-                      s >> word;
-                      std::cout << word << " ";
-                  }
-                  std::cout << '\n';
-                        
-            } 
-            //print blanks lines where applicable
-            else if(word == ""){
-                std::cout << '\n';
-            }
-            
-            //now we have to deal with commands
-            else {
-                //store the memory address for use and then move to next word 
-                //determine which command to execute
-                std::string memAddress = word;
-                s >> word;
-                
-                //memsize command first line non commented in file
-                if (word == "memsize"){
-                    memsize(memAddress);
-                } 
-                
-                //TODO: Levi -> you can start from here
-                else if (word == "cmp"){
-                    std::cout << '\n';
-                }
-                
-                //this branch adds dealing with the set command
-                else if (word == "set"){
-                    
-                    std::cout << '\n';
-                }
-              
-                //This is our catch all until everything is done
-                else {
-                     std::cout << "This line not addressed yet. " << '\n';
-                }
-            
-                
-                
-            }
-            //TODO: rest of commands
-           
-            //increments the counter for line. Leave at the end
-            
-            line ++;
-            
+    //extracts the lines from the file one at a time and performs commands
+    std::string readLine = "";
+        
+    while (getline (*file, readLine)){
+        //prints out the line number of the command being read in decimal
+        std::cout << std::dec << line << ":" << readLine << "\n";
+
+        std::istringstream s(readLine); 
+        int memAddress; 
+        std::string word;
+        
+        //store the memory address for use and then move to next word 
+        s >> std::hex >> memAddress;
+        
+        //store the command for parsing
+        s >> word;
+        
+        //determine which command to execute
+        //memsize command first line non commented in file
+        if (word == "memsize"){
+            std::cout << memAddress << "\n";
+            memsize(memAddress);
+        } 
+
+        else if (word == "cmp"){
+            int memAddress2;
+            int count; 
+            s >> std::hex >> memAddress2;
+            s >> std::hex >> count;
+
+            cmp(memAddress, memAddress2, count);
         }
-       
-   
+
+        //this branch adds dealing with the set command
+        else if (word == "set"){
+        }
+
+        //This is our catch all until everything is done
+        else {
+            std::cout << "This line not addressed yet.\n";
+        }
+        //TODO: rest of commands
+
+        //increments the counter for line. Leave at the end
+        line++;
+    }
 }
 
-void Process::memsize(std::string address){
-    //convert the string to an int so that we can use it
-    std::istringstream itos(address); 
-    int check = 0;
-    itos >> check;
-                    
+void Process::memsize(int address){
     //check that it follows program constraints
-    if (check > 4000000){
+    if (address > 4000000){
         throw std::runtime_error{ "Error: memsize command address size is too large"};
     }
-    //resize the vector
-    mem->resize(check);
-                    
-    //keep the formatting by printing
-    std::cout << std::dec << check << " memsize";
-    std::cout << '\n';
+    
+    //initialize and fill constructor with zeros
+    mem = new std::vector<uint8_t>(address, 0);
+}
+
+void Process::cmp(int address1, int address2, int count) {
+    //check each memory address
+    for (int offset = 0; offset < count; offset++) {
+        
+        //convenience variables for cleaner code
+        int addressA = address1 + offset;
+        int addressB = address2 + offset;
+        uint8_t valA = mem->at(addressA);
+        uint8_t valB = mem->at(addressB);
+        
+        //if mismatch found, print information
+        if (valA != valB) {
+            std::cerr << "cmp error, addr1 = " << std::hex << addressA
+                    << ", value = " << std::hex << valA
+                    << ", addr2 = " << std::hex << addressB
+                    << ", value = " << std::hex << valB
+                    << "\n";
+        }
+    }
+    
+    
 }
