@@ -161,15 +161,23 @@ void Process::dup(int src_address, int dest_address, int count) {
 }
 
 void Process::print(int address, int count){
-    for (int i = 0; i < count; i += 16){
-        std::cout << std::setfill('0') << std::setw(7) << std::hex 
+    
+    int placeHolderTotal = 0;
+    int placeHolderRow = 0;
+    
+    for(int i = 0; i < count; i +=16){
+        placeHolderRow = 0;
+         std::cout << std::setfill('0') << std::setw(7) << std::hex 
             << address + i << ":";
-        
-        for(int j = i; j < count; j++){
-            std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
-                    << (int) mem->at(address + j);
+         for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
+              std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
+                    << (int) mem->at(address + placeHolderTotal + j);
+              placeHolderRow ++;
+              
         }
-        
-        std::cout << "\n"; 
+         placeHolderTotal += 16;
+          std::cout << "\n"; 
     }
+    
+    
 }
