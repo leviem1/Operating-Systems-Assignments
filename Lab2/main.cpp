@@ -1,6 +1,6 @@
 /* 
  * File:   main.cpp
- * Author: muniz
+ * Authors: Elisabeth Bristol and Levi Muniz
  *
  * Created on January 14, 2019, 1:27 PM
  */

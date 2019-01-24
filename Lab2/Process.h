@@ -1,6 +1,6 @@
 /* 
  * File:   Process.h
- * Author: Levi Muniz
+ * Authors: Elisabeth Bristol and Levi Muniz
  *
  * Created on January 18, 2019, 4:44 PM
  */

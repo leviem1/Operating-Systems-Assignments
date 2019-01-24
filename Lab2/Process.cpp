@@ -1,6 +1,6 @@
 /* 
  * File:   Process.cpp
- * Author: Levi Muniz
+ * Authors: Elisabeth Bristol and Levi Muniz
  * 
  * Created on January 18, 2019, 4:44 PM
  */
@@ -40,7 +40,7 @@ void Process::Exec(){
     std::string readLine = "";
         
     while (getline(*file, readLine)){
-        //prints out the line number of the command being read in decimal
+        //prints out the line number and the command being read
         std::cout << std::dec << line << ":" << readLine << "\n";
 
         std::istringstream s(readLine); 
@@ -56,7 +56,6 @@ void Process::Exec(){
         //determine which command to execute
         //memsize command first line non commented in file
         if (word == "memsize"){
-            std::cout << memAddress << "\n";
             memsize(memAddress);
         } 
 
@@ -104,7 +103,7 @@ void Process::memsize(int address){
         throw std::runtime_error{ "Error: memsize command address size is too large"};
     }
     
-    //initialize and fill constructor with zeros
+    //initialize and fill vector with zeros
     mem = new std::vector<uint8_t>(address, 0);
 }
 
