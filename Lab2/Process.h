@@ -13,6 +13,8 @@
 #include <fstream>
 #include <cstdint>
 #include <vector>
+#include <iomanip>
+#include <sstream>
 
 /*
  * 
@@ -21,6 +23,7 @@ class Process {
 public:
     /*Constructor for Process 
      * @param filename - name of the file we are reading from
+     * @throws run time error if the file cannot be opened
      */
     Process(const std::string &filename);
     
@@ -62,7 +65,7 @@ private:
      * @param v - a vector containing the list of values to add
      * @return - void
      */
-    void set(int address, std::vector<int> v);
+    void set(int address, std::vector<int> &v);
     
     /* fill - puts count number of some value starting at an address
      * @param address - the starting address
@@ -79,6 +82,14 @@ private:
      * @return - void
      */
     void dup(int src_address, int dest_address, int count);
+    
+    /* print - prints the status of memory in 16 byte intervals 
+     * displays the address of each 16 byte chunks at the beginning of each row
+     * @param address -  the starting point the print comes from
+     * @param count - the number of bytes we are displaying
+     * @return - void
+     */
+    void print(int address, int count);
 };
 
 #endif /* PROCESS_H */

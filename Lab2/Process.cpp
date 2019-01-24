@@ -99,8 +99,11 @@ void Process::Exec(){
         }
         
         else if (word == "print") {
+            int count;
+            s >> count;
+            
+            print(memAddress, count);
         }
-        //TODO: rest of commands
 
         //increments the counter for line. Leave at the end
         line++;
@@ -139,10 +142,11 @@ void Process::cmp(int address1, int address2, int count) {
     }
 }
 
-void Process::set(int address, std::vector<int> v){
+void Process::set(int address, std::vector<int> &v){
     //keep track of how far away we are as an offset
     for(int offset = 0; offset < v.size() - 1; offset ++){
         mem->at(address + offset) = v.at(offset);
+      
     }
 }
 
@@ -154,4 +158,35 @@ void Process::dup(int src_address, int dest_address, int count) {
     for (int i = 0; i < count; i++) {
         mem->at(dest_address + count) = mem->at(src_address + count);
     }
+}
+
+void Process::print(int address, int count){
+   
+    int totalCount = 0;
+    
+    while (totalCount <= count ){
+        //set up the header for each line of 16 stating the address correctly
+        std::stringstream s;
+        s << std::setfill ('0') << std::setw (7) << address + totalCount << ": ";
+        std::cout << s.str();
+        
+        for(int i = 0; i < 16; i ++){
+            
+            if(i > count){
+                break;
+            }
+            
+            std::stringstream s1;
+            s1 << std::setfill ('0') << std::setw (2) << mem->at(address + totalCount);
+            std::cout << s1.str() << " ";
+            
+            //increment the counters
+            totalCount ++;
+        }
+
+        std::cout << '\n';
+    }
+
+    
+    
 }
