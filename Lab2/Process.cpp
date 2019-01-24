@@ -31,7 +31,7 @@ Process::~Process() {
     
     if (mem) delete mem;
     
-    delete file;
+    if (file) delete file;
     file = nullptr;
     mem = nullptr;
 }
@@ -71,6 +71,15 @@ void Process::Exec(){
 
         //this branch adds dealing with the set command
         else if (word == "set"){
+            std::vector<int> v;
+            int value;
+            //collect all the values that we need to set into a vector
+            while(s){
+                s >> std::hex >> value;
+                v.push_back(value);
+            }
+            
+            set(memAddress, v);
         }
         
         else if (word == "fill") {
@@ -127,6 +136,13 @@ void Process::cmp(int address1, int address2, int count) {
                     << ", value = " << std::hex << valB
                     << "\n";
         }
+    }
+}
+
+void Process::set(int address, std::vector<int> v){
+    //keep track of how far away we are as an offset
+    for(int offset = 0; offset < v.size() - 1; offset ++){
+        mem->at(address + offset) = v.at(offset);
     }
 }
 

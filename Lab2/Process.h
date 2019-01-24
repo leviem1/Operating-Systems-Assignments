@@ -57,6 +57,13 @@ private:
      */
     void cmp(int address1, int address2, int count);
     
+    /*set - takes a list of values and sets them in memory from an address
+     * @param address - the starting spot in memory
+     * @param v - a vector containing the list of values to add
+     * @return - void
+     */
+    void set(int address, std::vector<int> v);
+    
     /* fill - puts count number of some value starting at an address
      * @param address - the starting address
      * @param value - the value we will use for the filling
