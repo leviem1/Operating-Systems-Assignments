@@ -9,7 +9,6 @@
 #define PROCESS_H
 
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <fstream>
 #include <cstdint>
@@ -36,6 +35,7 @@ private:
     
     void memsize(int);
     void cmp(int, int, int);
+    void fill(int, int, int);
 };
 
 #endif /* PROCESS_H */

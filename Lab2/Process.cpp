@@ -6,6 +6,8 @@
  */
 
 #include "Process.h"
+#include <algorithm>
+#include <sstream>
 
 Process::Process(const std::string &filename) {
     file = new std::fstream();
@@ -34,7 +36,7 @@ void Process::Exec(){
     //extracts the lines from the file one at a time and performs commands
     std::string readLine = "";
         
-    while (getline (*file, readLine)){
+    while (getline(*file, readLine)){
         //prints out the line number of the command being read in decimal
         std::cout << std::dec << line << ":" << readLine << "\n";
 
@@ -67,10 +69,19 @@ void Process::Exec(){
         //this branch adds dealing with the set command
         else if (word == "set"){
         }
-
-        //This is our catch all until everything is done
-        else {
-            std::cout << "This line not addressed yet.\n";
+        
+        else if (word == "fill") {
+            int value;
+            int count;
+            s >> std::hex >> value;
+            s >> std::hex >> count;
+            fill(memAddress, value, count);
+        }
+        
+        else if (word == "dup") {
+        }
+        
+        else if (word == "print") {
         }
         //TODO: rest of commands
 
@@ -108,6 +119,8 @@ void Process::cmp(int address1, int address2, int count) {
                     << "\n";
         }
     }
-    
-    
+}
+
+void Process::fill(int address, int value, int count) {
+    std::fill_n(mem->begin() + address, count, value);
 }
