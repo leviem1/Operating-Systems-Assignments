@@ -170,9 +170,9 @@ void Process::print(int address, int count){
         s << std::setfill ('0') << std::setw (7) << address + totalCount << ": ";
         std::cout << s.str();
         
-        for(int i = 0; i < 16; i ++){
+        for(int i = 0; i < 16 && i < count; i ++){
             
-            if(i > count){
+            if(totalCount > count){
                 break;
             }
             
