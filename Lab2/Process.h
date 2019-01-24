@@ -15,10 +15,9 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
+#include <algorithm>
 
-/*
- * 
- */
+
 class Process {
 public:
     /*Constructor for Process 
@@ -56,6 +55,7 @@ private:
      * @param address1 - first address in comparison
      * @param address2 - second address in comparison
      * @param count - number of bytes to be compared
+     * @throws - standard error with message if the compared things don't match
      * @return void
      */
     void cmp(int address1, int address2, int count);

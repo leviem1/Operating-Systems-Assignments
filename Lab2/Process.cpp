@@ -6,11 +6,10 @@
  */
 
 #include "Process.h"
-#include <algorithm>
-#include <sstream>
 
 
 Process::Process(const std::string &filename) {
+    //open the file with proper errors
     file = new std::fstream();
     
     file->open(filename, std::fstream::in);
@@ -19,13 +18,10 @@ Process::Process(const std::string &filename) {
         throw std::runtime_error("File could not be opened");
     }
     
+    //initialize member variables
     line = 1;
-    
-    mem = new std::vector<std::uint8_t>;
-    
+    mem = new std::vector<std::uint8_t>;  
  }
-
-
 
 Process::~Process() {
     if (file && file->is_open()) {
@@ -58,11 +54,12 @@ void Process::Exec(){
         s >> word;
         
         //determine which command to execute
-        //memsize command first line non commented in file
+        //memsize command
         if (word == "memsize"){
             memsize(memAddress);
         } 
 
+        //cmp command
         else if (word == "cmp"){
             int memAddress2;
             int count; 
@@ -72,7 +69,7 @@ void Process::Exec(){
             cmp(memAddress, memAddress2, count);
         }
 
-        //this branch adds dealing with the set command
+        // set command
         else if (word == "set"){
             std::vector<std::uint8_t> v;
             int value;
@@ -86,6 +83,7 @@ void Process::Exec(){
             set(memAddress, v);
         }
         
+        //fill command
         else if (word == "fill") {
             int value;
             int count;
@@ -94,6 +92,7 @@ void Process::Exec(){
             fill(memAddress, value, count);
         }
         
+        //dup command
         else if (word == "dup") {
             int dest_address;
             int count;
@@ -102,6 +101,7 @@ void Process::Exec(){
             dup(memAddress, dest_address, count);
         }
         
+        //print command
         else if (word == "print") {
             int count;
             s >> std::hex >> count;
@@ -151,16 +151,19 @@ void Process::cmp(int address1, int address2, int count) {
 
 void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
+    //then assign the values
     for(int offset = 0; offset < v.size() - 1; offset++){
         mem->at(address + offset) = v.at(offset);
     }
 }
 
 void Process::fill(int address, int value, int count) {
+    //fill the vector of memory from the front with a value count times
     std::fill_n(mem->begin() + address, count, value);
 }
 
 void Process::dup(int src_address, int dest_address, int count) {
+    //find the value at the address and copy it to the new one, use i as offset
     for (int i = 0; i < count; i++) {
         mem->at(dest_address +  i) = mem->at(src_address +  i);
     }
@@ -168,22 +171,26 @@ void Process::dup(int src_address, int dest_address, int count) {
 
 void Process::print(int address, int count){
     
+    //markers to keep track of where we are
     int placeHolderTotal = 0;
     int placeHolderRow = 0;
     
+    //outer loop keeps track of building the headers and breaks fro new lines
     for(int i = 0; i < count; i +=16){
         placeHolderRow = 0;
          std::cout << std::setfill('0') << std::setw(7) << std::hex 
             << address + i << ":";
+         
+         //so long as we have stuff to print that fits in the row
+         //print it accounting for total changes
          for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
               std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
                     << (int) mem->at(address + placeHolderTotal + j);
-              placeHolderRow ++;
-              
+              placeHolderRow ++;  
         }
+         
+         //update counter and new line break
          placeHolderTotal += 16;
           std::cout << "\n"; 
-    }
-    
-    
+    }   
 }

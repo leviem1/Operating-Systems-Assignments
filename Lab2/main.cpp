@@ -10,16 +10,16 @@
 
 using namespace std;
 
-/*
- * 
- */
 int main(int argc, char** argv) {
+    
+    //check for the proper number of arguements
     if (argc != 2) {
         std::cerr << "Usage: Lab2 file" << std::endl;
         
         return 1;
     }
     
+    //create the object and run exec on the file with given commands
     Process p(argv[1]);
     p.Exec();
 
