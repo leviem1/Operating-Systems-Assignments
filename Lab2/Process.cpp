@@ -162,7 +162,7 @@ void Process::fill(int address, int value, int count) {
 
 void Process::dup(int src_address, int dest_address, int count) {
     for (int i = 0; i < count; i++) {
-        mem->at(dest_address + count) = mem->at(src_address + count);
+        mem->at(dest_address +  i) = mem->at(src_address +  i);
     }
 }
 
