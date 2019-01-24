@@ -30,8 +30,8 @@ Process::~Process() {
     }
     
     if (mem) delete mem;
-    
     if (file) delete file;
+    
     file = nullptr;
     mem = nullptr;
 }
@@ -73,12 +73,13 @@ void Process::Exec(){
         else if (word == "set"){
             std::vector<std::uint8_t> v;
             int value;
+            
             //collect all the values that we need to set into a vector
-            while(s){
+            while(s && s.good()){
                 s >> std::hex >> value;
                 v.push_back(value);
             }
-            
+                                    
             set(memAddress, v);
         }
         
@@ -124,7 +125,6 @@ void Process::memsize(int address){
 void Process::cmp(int address1, int address2, int count) {
     //check each memory address
     for (int offset = 0; offset < count; offset++) {
-        
         //convenience variables for cleaner code
         int addressA = address1 + offset;
         int addressB = address2 + offset;
@@ -145,9 +145,8 @@ void Process::cmp(int address1, int address2, int count) {
 
 void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
-    for(int offset = 0; offset < v.size() - 1; offset ++){
+    for(int offset = 0; offset < v.size(); offset++){
         mem->at(address + offset) = v.at(offset);
-      
     }
 }
 
@@ -162,32 +161,15 @@ void Process::dup(int src_address, int dest_address, int count) {
 }
 
 void Process::print(int address, int count){
-   
-    int totalCount = 0;
-    
-    while (totalCount < count ){
-        //set up the header for each line of 16 stating the address correctly
-        std::stringstream s;
-        s << std::setfill('0') << std::setw(7) << std::hex << address + totalCount << ":";
-        std::cout << s.str();
+    for (int i = 0; i < count; i += 16){
+        std::cout << std::setfill('0') << std::setw(7) << std::hex 
+            << address + i << ":";
         
-        for(int i = 0; i < 16 && i < count; i ++){
-            
-            if(totalCount > count){
-                break;
-            }
-            
-            std::stringstream s1;
-            s1 << std::setfill('0') << std::setw(2) << std::hex << (int) mem->at(address + totalCount);
-            std::cout << " " << s1.str();
-            
-            //increment the counters
-            totalCount++;
+        for(int j = i; j < count; j++){
+            std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
+                    << (int) mem->at(address + j);
         }
-
-        std::cout << "\n";
+        
+        std::cout << "\n"; 
     }
-
-    
-    
 }
