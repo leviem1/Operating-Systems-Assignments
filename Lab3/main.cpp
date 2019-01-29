@@ -8,7 +8,7 @@
  * File:   main.cpp
  * Author: muniz
  *
- * Created on January 24, 2019, 9:53 PM
+ * Created on January 29, 2019, 10:10 AM
  */
 
 #include <cstdlib>
@@ -19,10 +19,7 @@ using namespace std;
  * 
  */
 int main(int argc, char** argv) {
-    if (argc < 4) {
-        cerr < "Usage: Assignment1 file block_duration time_slice\n";
-    }
-    
+
     return 0;
 }
 
