@@ -22,7 +22,7 @@ public:
     
     FrameAllocator(int frameNumber);
     
-    virtual ~FrameAllocator();
+    ~FrameAllocator();
     
     //explicit rule of five deletes
     FrameAllocator(const FrameAllocator& other) = delete;
