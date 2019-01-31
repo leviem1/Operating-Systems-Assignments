@@ -22,8 +22,10 @@
  * 
  */
 int main(int argc, char** argv) {
+    FrameAllocator f2(10);
+    return 0;
     
-     //check for the proper number of args
+    //check for the proper number of args
     if (argc != 2) {
         std::cerr << "Usage: Lab3 file" << std::endl;
         
@@ -35,7 +37,7 @@ int main(int argc, char** argv) {
     
     //create and open the file
     std::ifstream myFile(filename);
-    if (!myFile.is_open()) {
+    if (!myFile.is_open() || !myFile.good()) {
         throw std::runtime_error{ "Error: failed to open file: " + filename };
     } else {
      

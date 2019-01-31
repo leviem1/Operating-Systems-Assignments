@@ -15,7 +15,7 @@
 #define FRAMEALLOCATOR_H
 
 #include<vector>
-#include <cstdint>
+#include <iostream>
 
 class FrameAllocator {
 public:

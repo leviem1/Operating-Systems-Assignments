@@ -13,13 +13,22 @@
 
 #include "FrameAllocator.h"
 
-FrameAllocator::FrameAllocator(int frameNumber ) {
+FrameAllocator::FrameAllocator(int frameNumber) {
     
     //size the mem vector to the appropriate number of frames and fill with 0's
     //TODO: needs to be multiplied by page frame size
-    mem.resize(frameNumber);
-    for(int i = 0; i < mem.size() - 1; i++){
-        mem.at(i) = 0;
+    mem.resize(frameNumber * 16384);
+    for(int i = 0; i < mem.size(); i++){
+        if (i % 16384 && i != 0) {
+            mem.at(i) = i + 16380;
+        } else {
+            mem.at(i) = 0;
+        }
+    }
+    
+    //TODO: Debugger code, should print address of next frame
+    for(int i = 0; i < mem.size(); i += 16384) {
+        std::cout << (int) mem.at(i) << "\n";
     }
 }
 
