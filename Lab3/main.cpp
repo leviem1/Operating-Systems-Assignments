@@ -52,7 +52,12 @@ int main(int argc, char** argv) {
         //build the frame allocator 
         FrameAllocator f(frameNumber);
         
+        //vector of vectors that store all the processes
+        std::vector<std::vector<uint32_t>> processes(4);
+        
         readLine = "";
+        
+        bool success = false;
         
         
         //cycle through and print each line and do the required commands
@@ -63,8 +68,8 @@ int main(int argc, char** argv) {
             //set up a way to read in the values for each line not
             //not related to the one before
             istringstream s1(readLine); 
-            int processNumber; 
-            int pageFrameCount;
+            uint32_t processNumber; 
+            uint32_t pageFrameCount;
             string command;
             
             //get the command we need to parse
@@ -75,15 +80,34 @@ int main(int argc, char** argv) {
                 //store the needed values
                 s1 >> hex >> processNumber;
                 s1 >> hex >> pageFrameCount;
+                success = f.Allocate(pageFrameCount, processes.at(processNumber));
+                if(success){
+                    std::cout << " T " << std::hex << f.get_available() << "\n";
+                } 
+                
+                else {
+                    std::cout << " F " << std::hex << f.get_available() << "\n"; 
+                }
             }
             
             else if(command == "R"){
                 //store the needed values
                 s1 >> hex >> processNumber;
                 s1 >> hex >> pageFrameCount;
+                success = f.Release(pageFrameCount, processes.at(processNumber));
+                
+                if(success){
+                    std::cout << " T " << std::hex << f.get_available() << "\n";
+                } 
+                
+                else {
+                    std::cout << " F " << std::hex << f.get_available() << "\n"; 
+                }
             }
             
             else if(command == "P"){
+                
+                std::cout << f.get_available_list_string() << "\n";
                 
             }
             

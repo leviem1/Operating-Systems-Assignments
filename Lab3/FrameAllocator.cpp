@@ -132,14 +132,13 @@ string FrameAllocator::get_available_list_string() const {
 string FrameAllocator::build_string(uint32_t addr) const {
     ostringstream ostring;
     
-    ostring << " ";
-    
+         
     //If current addr is not 0xFFFFFFFF, then we can recurse
     if (addr != 0xFFFFFFFF) {
         uint32_t next;
         memcpy(&next, &mem.at(addr), sizeof(next));
         
-        ostring << hex << addr << build_string(next);
+        ostring << " " << hex << addr <<build_string(next);
     }
     
     return ostring.str();
