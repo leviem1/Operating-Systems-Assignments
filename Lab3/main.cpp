@@ -42,12 +42,21 @@ int main(int argc, char** argv) {
         //read the first value in the file and store it
         std::string readLine = "";
         getline(myFile, readLine);
+        std::cout << "|" << readLine << "\n";
         std::istringstream s(readLine); 
         int frameNumber; 
         s >> frameNumber;
         
         //build the frame allocator 
         FrameAllocator f(frameNumber);
+        
+        readLine = "";
+        //cycle through and print each line and do the required commands
+        while (getline(myFile, readLine)){
+            //prints out the line number and the command being read
+            std::cout << "|" << readLine << "\n";
+            
+        }
         
          
         //close the file now that we have read through the whole thing
