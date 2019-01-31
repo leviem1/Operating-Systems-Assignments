@@ -44,12 +44,54 @@ int main(int argc, char** argv) {
         //read the first value in the file and store it
         std::string readLine = "";
         getline(myFile, readLine);
+        std::cout << "|" << readLine << "\n";
         std::istringstream s(readLine); 
         int frameNumber; 
         s >> frameNumber;
         
         //build the frame allocator 
         FrameAllocator f(frameNumber);
+        
+        readLine = "";
+        
+        
+        //cycle through and print each line and do the required commands
+        while (getline(myFile, readLine)){
+            //prints out the line number and the command being read
+            std::cout << "|" << readLine << "\n";
+            
+            //set up a way to read in the values for each line not
+            //not related to the one before
+            std::istringstream s1(readLine); 
+            int processNumber; 
+            int pageFrameCount;
+            std::string command;
+            
+            //get the command we need to parse
+            s1 >> command;
+            
+            
+            if(command == "A"){
+                //store the needed values
+                s1 >> std::hex >> processNumber;
+                s1 >> std::hex >> pageFrameCount;
+            }
+            
+            else if(command == "R"){
+                //store the needed values
+                s1 >> std::hex >> processNumber;
+                s1 >> std::hex >> pageFrameCount;
+            }
+            
+            else if(command == "P"){
+                
+            }
+            
+            else {
+                throw std::runtime_error{ "Error: unknown command found: " + command };
+            }
+            
+        }
         
          
         //close the file now that we have read through the whole thing
