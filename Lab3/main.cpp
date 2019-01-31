@@ -15,37 +15,37 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "FrameAllocator.h"
+
+using namespace std;
 
 /*
  * 
  */
 int main(int argc, char** argv) {
-    FrameAllocator f2(10);
-    return 0;
-    
     //check for the proper number of args
     if (argc != 2) {
-        std::cerr << "Usage: Lab3 file" << std::endl;
+        cerr << "Usage: Lab3 file" << endl;
         
         return 1;
     }
     
     //store the filename for use throughout the read.
-    std::string filename = argv[1];
+    string filename = argv[1];
     
     //create and open the file
-    std::ifstream myFile(filename);
+    ifstream myFile(filename);
     if (!myFile.is_open() || !myFile.good()) {
-        throw std::runtime_error{ "Error: failed to open file: " + filename };
+        throw runtime_error{ "Error: failed to open file: " + filename };
     } else {
      
         //read the first value in the file and store it
-        std::string readLine = "";
+        string readLine = "";
         getline(myFile, readLine);
-        std::cout << "|" << readLine << "\n";
-        std::istringstream s(readLine); 
+        cout << "|" << readLine << "\n";
+        istringstream s(readLine); 
         int frameNumber; 
         s >> frameNumber;
         
@@ -58,14 +58,14 @@ int main(int argc, char** argv) {
         //cycle through and print each line and do the required commands
         while (getline(myFile, readLine)){
             //prints out the line number and the command being read
-            std::cout << "|" << readLine << "\n";
+            cout << "|" << readLine << "\n";
             
             //set up a way to read in the values for each line not
             //not related to the one before
-            std::istringstream s1(readLine); 
+            istringstream s1(readLine); 
             int processNumber; 
             int pageFrameCount;
-            std::string command;
+            string command;
             
             //get the command we need to parse
             s1 >> command;
@@ -73,14 +73,14 @@ int main(int argc, char** argv) {
             
             if(command == "A"){
                 //store the needed values
-                s1 >> std::hex >> processNumber;
-                s1 >> std::hex >> pageFrameCount;
+                s1 >> hex >> processNumber;
+                s1 >> hex >> pageFrameCount;
             }
             
             else if(command == "R"){
                 //store the needed values
-                s1 >> std::hex >> processNumber;
-                s1 >> std::hex >> pageFrameCount;
+                s1 >> hex >> processNumber;
+                s1 >> hex >> pageFrameCount;
             }
             
             else if(command == "P"){
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
             }
             
             else {
-                throw std::runtime_error{ "Error: unknown command found: " + command };
+                throw runtime_error{ "Error: unknown command found: " + command };
             }
             
         }
