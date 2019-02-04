@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   FrameAllocator.h
- * Author: elisabethbristol
+ * Author: Elisabeth Bristol and Levi Muniz
  *
  * Created on January 30, 2019, 3:24 PM
  */
@@ -21,14 +15,41 @@
 
 class FrameAllocator {
 public:
+    /* Constructor for Frame Allocator
+     * @param frameNumber - from file line 1, number of frames
+     */
     FrameAllocator(int frameNumber);
     
+    /* Allocate - allocates spaces in memory - sets allocated bytes to 0
+     * @param count - the number of available page frames to allocate
+     * @param page frames - which processes table should we be looking at
+     * @returns - bool true if success false if not enough free mem to allocate
+     */
     bool Allocate(std::uint32_t count, std::vector<std::uint32_t> &page_frames);
+    
+    /**
+     * Release - frees up count amount of mem from back of list
+     * @param count - number of page frame address to be released
+     * @param page_frames - from which processes table
+     * @return - bool. If count > then whole table return false otherwise true
+     */
     bool Release(std::uint32_t count, std::vector<std::uint32_t> &page_frames);
     
+    /**
+     * get_available - getter for available entry
+     * @return - the available entry
+     */
     std::uint32_t get_available() const;
+    
+    /**
+     * get_available_list_string - getter for available mem as a string
+     * @return - a string with all available slots in memory in correct format
+     */
     std::string get_available_list_string() const;
     
+    /**
+     * empty destructor defined for frame allocator
+     */
     ~FrameAllocator();
     
     //explicit rule of five deletes
@@ -38,6 +59,7 @@ public:
     FrameAllocator& operator=(FrameAllocator&& other) = delete;
     
 private:
+    //vector to store memory
     std::vector<std::uint8_t> mem;
     
     //Pointer to PAGE_FRAMES_TOTAL value

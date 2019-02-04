@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   FrameAllocator.cpp
- * Author: elisabethbristol
+ * Author: Elisabeth Bristol and Levi Muniz
  * 
  * Created on January 30, 2019, 3:24 PM
  */
@@ -17,7 +11,7 @@ using namespace std;
     
 FrameAllocator::FrameAllocator(int frameNumber) {
     //Initialize "system memory" and fill with zeros
-    //0x4000 = 16KB
+    //0x4000 = 16KB - constant given page frame size
     mem.resize(frameNumber * 0x4000, 0);
     
     //Create links by storing address of next free frame in first 32-bits
@@ -132,7 +126,6 @@ string FrameAllocator::get_available_list_string() const {
 string FrameAllocator::build_string(uint32_t addr) const {
     ostringstream ostring;
     
-         
     //If current addr is not 0xFFFFFFFF, then we can recurse
     if (addr != 0xFFFFFFFF) {
         uint32_t next;
@@ -144,6 +137,5 @@ string FrameAllocator::build_string(uint32_t addr) const {
     return ostring.str();
 }
 
-//explicit empty destructor
 FrameAllocator::~FrameAllocator() {
 }
