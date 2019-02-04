@@ -27,7 +27,7 @@ process parseProcess(std::string processInfo){
     s >> blockInterval;
     
     //create a process to return 
-    process p(name, arrivalTime, totalTime, blockInterval);
+    process p(name, arrivalTime, totalTime, blockInterval, 0, 0);
     return p;
 }
 

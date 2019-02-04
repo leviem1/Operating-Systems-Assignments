@@ -7,12 +7,14 @@
 
 #include "process.h"
 
-process::process(std::string n, int at, int tt, int bt) {
+process::process(std::string n, int at, int tt, int bt, int et, int tb) {
     name = n;
     arrivalTime = at;
     totalTime = tt;
     blockInterval = bt;
     complete = false;
+    endTime = et;
+    timeBlocked =tb;
     
 }
 
@@ -45,6 +47,10 @@ std::string process::getName(){
 
 bool process::getComplete(){
     return complete;
+}
+
+int process::getTimeBlocked(){
+    return timeBlocked;
 }
 
 

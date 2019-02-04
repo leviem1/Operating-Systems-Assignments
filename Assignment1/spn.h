@@ -37,8 +37,9 @@ private:
     int blockDuration;
     int simTime;
     std::priority_queue<process> readyList;
-    std::priority_queue<process> blockedList;
+    std::vector<process> blockedList;
     bool running;
+    bool CPUBusy;
     
     bool isComplete(std::vector<process> p);
    

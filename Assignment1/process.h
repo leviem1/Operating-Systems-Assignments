@@ -18,7 +18,7 @@
 
 class process {
 public:
-    process(std::string n, int at, int tt, int bt);
+    process(std::string n, int at, int tt, int bt, int et, int tb);
     ~process();
     process(process&& other);
     process& operator=(const process& other);
@@ -34,6 +34,7 @@ public:
     int getTotalTime();
     int getBlockInterval();
     bool getComplete();
+    int getTimeBlocked();
     
     
 private:
@@ -43,6 +44,8 @@ private:
     int totalTime;
     int blockInterval;
     bool complete;
+    int endTime;
+    int timeBlocked;
     
     
 };
