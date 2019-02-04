@@ -12,11 +12,13 @@ process::process(std::string n, int at, int tt, int bt) {
     arrivalTime = at;
     totalTime = tt;
     blockInterval = bt;
+    complete = false;
+    
 }
 
 
 
-bool process::operator<(const process& rhs){
+bool process::operator<(const process& rhs) const{
     if(rhs.blockInterval < this->blockInterval){
         return true;
     } else {
@@ -39,6 +41,12 @@ int process::getTotalTime(){
 std::string process::getName(){
     return name;
 }
+
+
+bool process::getComplete(){
+    return complete;
+}
+
 
 process::~process() {
 }

@@ -6,7 +6,7 @@
 
 /* 
  * File:   process.h
- * Author: elisabethbristol
+ * Author: Elisabeth Bristol
  *
  * Created on February 4, 2019, 5:56 AM
  */
@@ -26,28 +26,23 @@ public:
     process& operator=(process&& other);
     
     
-    bool operator<(const process& a);
+    bool operator<(const process& a) const;
     
-    /* f'd up comparison overload
-    bool operator<(const process& a, const process& b){
-    if(a.getBlockInterval() < b.getBlockInterval()){
-        return true;
-    } else {
-        false;
-    }
-     
-}*/
     
     std::string getName();
     int getArrivalTime();
     int getTotalTime();
     int getBlockInterval();
+    bool getComplete();
+    
     
 private:
+    
     std::string name;
     int arrivalTime;
     int totalTime;
     int blockInterval;
+    bool complete;
     
     
 };

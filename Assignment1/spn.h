@@ -40,6 +40,7 @@ private:
     std::priority_queue<process> blockedList;
     bool running;
     
+    bool isComplete(std::vector<process> p);
    
 };
 
