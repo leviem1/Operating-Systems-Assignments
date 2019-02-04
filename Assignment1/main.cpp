@@ -12,6 +12,25 @@
 #include <fstream>
 #include <sstream>
 
+process parseProcess(std::string processInfo){
+    //the strings as they occur in the format of the file
+    std::string name;
+    int arrivalTime;
+    int totalTime;
+    int blockInterval;
+    
+    //create the string stream to break up the original process string
+    std::istringstream s(processInfo); 
+    s >> name;
+    s >> arrivalTime;
+    s >> totalTime;
+    s >> blockInterval;
+    
+    //create a process to return 
+    process p(name, arrivalTime, totalTime, blockInterval);
+    return p;
+}
+
 int main(int argc, char** argv) {
     //right number of command arguments?
     if (argc != 4) {
@@ -25,6 +44,14 @@ int main(int argc, char** argv) {
     int blockDuration = strtol(argv[2], nullptr, 10);
     int timeSlice = strtol(argv[3], nullptr, 10);
     
+    //check to make sure they got converted correctly
+    if(timeSlice == 0L){
+        std::cerr << "Conversion error on timeSlice argument\n";
+    }
+    if(blockDuration == 0L){
+        std::cerr << "Conversion error on timeSlice argument\n";
+    }
+    
     //open the file and throw errors as needed
     std::ifstream myFile(filename);
     if (!myFile.is_open() || !myFile.good()) {
@@ -33,24 +60,33 @@ int main(int argc, char** argv) {
     
     else{
         
-        //fill a vector with all processes information
-        std::vector<std::string> processes;
-        std::string process = "";
-        while(getline(myFile, process)){
-            processes.push_back(process);
+         
+        //fill a vector with process objects containing all information 
+        std::vector<process> processVector;
+        std::string processInfo = "";
+        while(getline(myFile, processInfo)){
+            process p = parseProcess(processInfo);
+            processVector.push_back(p);
         }
         
+        
+        //TODO: add round robin
+        std::cout << "RR" << blockDuration << " " << timeSlice << "\n";
+        
+        //print header for the algorithm
+        std::cout << "SPN " << blockDuration << " " << timeSlice << "\n";
+        
         //execute shortest process next on the input
-        spn s(processes, blockDuration);
+        spn s(processVector, blockDuration);
         s.run();
-        
-        int test = strtol("abced", nullptr, 10);
-        
         
     }
     
+    //close the file and end the program
+    myFile.close();
     
     
     return 0;
 }
+
 

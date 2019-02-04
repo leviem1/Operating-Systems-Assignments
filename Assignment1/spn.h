@@ -8,9 +8,12 @@
 #ifndef SPN_H
 #define SPN_H
 
+#include "process.h"
+
 #include <stdlib.h>
 
 #include <string>
+#include <iostream>
 #include <vector>
 #include <sstream>
 #include <fstream>
@@ -18,7 +21,7 @@
 
 class spn {
 public:
-    spn(std::vector<std::string> &pInfo, int bDuration);
+    spn(std::vector<process> &p, int bDuration);
     ~spn();
     
     //explicit rule of five deletes
@@ -30,18 +33,14 @@ public:
     void run();
     
 private:
-    std::vector<std::string> processInfo;
+    std::vector<process> processes;
     int blockDuration;
     int simTime;
-    std::priority_queue<int> readyList;
-    std::priority_queue<int> blockedList;
+    std::priority_queue<process> readyList;
+    std::priority_queue<process> blockedList;
+    bool running;
     
-    
-    
-    std::vector<std::string> parseProcessNum(std::string process);
-    std::string parseProcessName(std::string process);
-    
-
+   
 };
 
 #endif /* SPN_H */

@@ -6,47 +6,36 @@
  */
 
 #include "spn.h"
+    
 
-spn::spn(std::vector<std::string> &pInfo, int bDuration) {
-    processInfo = pInfo;
+spn::spn(std::vector<process> &p, int bDuration) {
+    processes = p;
     blockDuration = bDuration;
     simTime = 0;
+    running = true;
+    
+   
 }
 
 void spn::run(){
     
+    while(running){
+        
+        //run through our list of processes and see if a new one has started
+        for(int i = 0; i < processes.size(); i++){
+            if(processes.at(i).getArrivalTime() == simTime){
+                //readyList.push(processes.at(i));
+            } 
+            
+            //temporary for testing
+            running = false;
+            
+            //this acts like our clock over the while loop
+            simTime = simTime + 1;
+        }
+    } 
 }
 
-std::string spn::parseProcessName(std::string process){
-    //extract the name from the process string
-    std::string name;
-    std::istringstream s(process); 
-    s >> name;
-    return name;  
-}
-
-std::vector<std::string> spn::parseProcessNum(std::string process){
-    //the strings as they occur in the format of the file
-    std::string name;
-    int arrivalTime;
-    int totalTime;
-    int blockInterval;
-    
-    //create the string stream to break up the original process string
-    std::istringstream s(process); 
-    s >> name;
-    s >> arrivalTime;
-    s >> totalTime;
-    s >> blockInterval;
-    
-    //create a fill the vector of strings to return
-    std::vector<std::string> p;
-    p.at(0) = arrivalTime;
-    p.at(1) = totalTime;
-    p.at(2) = blockInterval;
-    
-    return p;
-}
 
 spn::~spn() {
 }
