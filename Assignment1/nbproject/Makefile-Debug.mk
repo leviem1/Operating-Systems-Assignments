@@ -36,8 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/scheduler.o \
-	${OBJECTDIR}/spn.o
+	${OBJECTDIR}/scheduler.o
 
 
 # C Compiler Flags
@@ -73,11 +72,6 @@ ${OBJECTDIR}/scheduler.o: scheduler.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/scheduler.o scheduler.cpp
-
-${OBJECTDIR}/spn.o: spn.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/spn.o spn.cpp
 
 # Subprojects
 .build-subprojects:

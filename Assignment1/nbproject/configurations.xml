@@ -5,7 +5,6 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>scheduler.h</itemPath>
-      <itemPath>spn.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -16,7 +15,6 @@
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
       <itemPath>scheduler.cpp</itemPath>
-      <itemPath>spn.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -49,10 +47,6 @@
       </item>
       <item path="scheduler.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="spn.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="spn.h" ex="false" tool="3" flavor2="0">
-      </item>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
@@ -80,10 +74,6 @@
       <item path="scheduler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="scheduler.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="spn.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="spn.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
