@@ -8,7 +8,7 @@
 #ifndef SPN_H
 #define SPN_H
 
-#include "process.h"
+/*
 
 #include <stdlib.h>
 
@@ -44,6 +44,8 @@ private:
     bool isComplete(std::vector<process> p);
    
 };
+
+ */
 
 #endif /* SPN_H */
 

@@ -6,11 +6,12 @@
  */
 
 
-#include "spn.h"
+#include "scheduler.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 process parseProcess(std::string processInfo){
     //the strings as they occur in the format of the file
@@ -27,9 +28,11 @@ process parseProcess(std::string processInfo){
     s >> blockInterval;
     
     //create a process to return 
-    process p(name, arrivalTime, totalTime, blockInterval, 0, 0);
+    process p = {name, arrivalTime, totalTime, 
+        blockInterval, -1, 0, 0};
     return p;
 }
+
 
 int main(int argc, char** argv) {
     //right number of command arguments?
@@ -37,6 +40,7 @@ int main(int argc, char** argv) {
         std::cerr << "Usage: Assignment1 file block_duration time_slice\n";
         return 1;
     }
+    
     
     //collect all info frome the arguments passed
     std::string filename = argv[1];
@@ -52,6 +56,27 @@ int main(int argc, char** argv) {
         std::cerr << "Conversion error on timeSlice argument\n";
     }
     
+    
+    /*
+    std::cout << "start of the testing code" << '\n';
+    std::vector<process> testCase;
+    process tester1 = {"test", 1, 2, 6, 0, false, 0, 0};
+    process tester2 = {"test2", 4, 5, 10, 0, false, 0, 4};
+    process tester3 = {"test3", 7, 8, 9, 0, false, 0, 0};
+    testCase.push_back(tester1);
+    testCase.push_back(tester2);
+    testCase.push_back(tester3);
+    std::priority_queue<process, std::vector<process>, processOperators> c3(testCase.begin(), testCase.end());
+    std::cout<< c3.top().name << '\n';
+    c3.pop();
+    std::cout<< c3.top().name << '\n';
+    c3.pop();
+    std::cout<< c3.top().name << '\n';
+    std::cout << "end of the testing code" << '\n';
+    
+    return 0;
+    */
+    
     //open the file and throw errors as needed
     std::ifstream myFile(filename);
     if (!myFile.is_open() || !myFile.good()) {
@@ -60,8 +85,7 @@ int main(int argc, char** argv) {
     
     else{
         
-         
-        //fill a vector with process objects containing all information 
+        //fill a vector with process structs containing all information 
         std::vector<process> processVector;
         std::string processInfo = "";
         while(getline(myFile, processInfo)){
@@ -71,14 +95,13 @@ int main(int argc, char** argv) {
         
         
         //TODO: add round robin
-        std::cout << "RR" << blockDuration << " " << timeSlice << "\n";
+        std::cout << "RR " << blockDuration << " " << timeSlice << "\n";
         
         //print header for the algorithm
         std::cout << "SPN " << blockDuration << " " << timeSlice << "\n";
         
-        //execute shortest process next on the input
-        spn s(processVector, blockDuration);
-        s.run();
+        
+        
         
     }
     

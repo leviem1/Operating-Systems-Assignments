@@ -4,7 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>process.h</itemPath>
+      <itemPath>scheduler.h</itemPath>
       <itemPath>spn.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -15,7 +15,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
-      <itemPath>process.cpp</itemPath>
+      <itemPath>scheduler.cpp</itemPath>
       <itemPath>spn.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -45,9 +45,9 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="process.cpp" ex="false" tool="1" flavor2="0">
+      <item path="scheduler.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="process.h" ex="false" tool="3" flavor2="0">
+      <item path="scheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="spn.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -77,9 +77,9 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="process.cpp" ex="false" tool="1" flavor2="0">
+      <item path="scheduler.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="process.h" ex="false" tool="3" flavor2="0">
+      <item path="scheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="spn.cpp" ex="false" tool="1" flavor2="0">
       </item>
