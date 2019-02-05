@@ -83,30 +83,26 @@ int main(int argc, char** argv) {
         throw std::runtime_error{ "Error: failed to open file: " + filename };
     }
     
-    else{
         
-        //fill a vector with process structs containing all information 
-        std::vector<process> processVector;
-        std::string processInfo = "";
-        while(getline(myFile, processInfo)){
-            process p = parseProcess(processInfo);
-            processVector.push_back(p);
-        }
-        
-        
-        //TODO: add round robin
-        std::cout << "RR " << blockDuration << " " << timeSlice << "\n";
-        
-        //print header for the algorithm
-        std::cout << "SPN " << blockDuration << " " << timeSlice << "\n";
-        
-        
-        
-        
+    //fill a vector with process structs containing all information 
+    std::vector<process> processVector;
+    std::string processInfo = "";
+    while(getline(myFile, processInfo)){
+        process p = parseProcess(processInfo);
+        processVector.push_back(p);
     }
+
+    scheduler s(processVector, blockDuration, timeSlice);
+
+    //TODO: add round robin
+    std::cout << "RR " << blockDuration << " " << timeSlice << "\n";
+
+    //print header for the algorithm
+    std::cout << "SPN " << blockDuration << " " << timeSlice << "\n";
+    s.spn();
     
     //close the file and end the program
-    myFile.close();
+    if (myFile && myFile.is_open()) myFile.close();
     
     
     return 0;

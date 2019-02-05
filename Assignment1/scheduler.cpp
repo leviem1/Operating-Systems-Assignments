@@ -30,7 +30,7 @@ void scheduler::spn(){
         queue;
     
     //if there's stuff to do
-    while(workingCopy.empty() == false){
+    while(!workingCopy.empty()){
         
         /*******BEGIN LIST PREPARATION*******/
         for(int i = 0; i < workingCopy.size(); i++){
@@ -61,6 +61,11 @@ void scheduler::spn(){
             
             //find match to running process and "run" it
             if (temp.name == curr.name) {
+                //Assume new process
+                if (temp.runningTime == 0 ) {
+                    std::cout << time << "\t" << temp.name << "\t";
+                }
+                
                 temp.runningTime++;
                 temp.totalTime--;
                 
@@ -71,7 +76,6 @@ void scheduler::spn(){
                     //add the turnaround about to be removed to sum for average
                     spnTurnSum += temp.turnaround;
                     workingCopy.erase(workingCopy.begin() + i);
-                    continue;
                 }
                 
                 //If the process is blocked, remove it from ready queue
@@ -97,6 +101,7 @@ void scheduler::spn(){
             
             /********END LIST PROCESSING*********/
         }
+        
         
         //increment the passage of time
         time ++;
@@ -173,6 +178,8 @@ void scheduler::spn(){
 
          */
     }
+    
+    std::cout << time << "\t<done>\t" << (float) (spnTurnSum / processes.size()) << "\n"; 
 
 }
 
