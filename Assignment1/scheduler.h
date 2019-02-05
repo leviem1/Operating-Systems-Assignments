@@ -8,6 +8,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <queue>

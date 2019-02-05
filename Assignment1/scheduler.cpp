@@ -80,6 +80,8 @@ void scheduler::spn(){
                 //now the thing is blocked...don't put it back on the queue
                 //update the values to reflect it is blocked
                 else {
+                    //Print this out now that blocking has begun
+                    std::cout << p.runningTime << "\tB\n";
                     p.runningTime = 0;
                     p.blockTimeTotal = 0;
                 }
