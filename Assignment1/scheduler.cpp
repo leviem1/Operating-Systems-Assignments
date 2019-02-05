@@ -32,6 +32,77 @@ void scheduler::spn(){
     //if there's stuff to do
     while(workingCopy.empty() == false){
         
+        /*******BEGIN LIST PREPARATION*******/
+        for(int i = 0; i < workingCopy.size(); i++){
+            process &temp = workingCopy.at(i);
+                        
+            //check to see if there is something new that has arrived
+            //push to the ready queue
+            if(temp.arrivalTime == time){
+                queue.push(temp);
+                continue;
+            }
+            
+            //check if something has unblocked and push to ready queue
+            //reset the blocked time to 0
+            if(temp.blockTimeTotal == blockedDuration){
+                temp.blockTimeTotal = -1;
+                queue.push(temp);
+                continue;
+            }
+        }
+        
+        /********END LIST PREPARATION********/
+        /********BEGIN LIST PROCESSING*******/
+        
+        process curr = queue.top();
+        for(int i = 0; i < workingCopy.size(); i ++){
+            process &temp = workingCopy.at(i);
+            
+            //find match to running process and "run" it
+            if (temp.name == curr.name) {
+                temp.runningTime++;
+                temp.totalTime--;
+                
+                //assuming only one thing can ever change
+                //take the things finished out of the list
+                if (temp.totalTime == 0) {
+                    std::cout << temp.runningTime << "\tT\n";
+                    //add the turnaround about to be removed to sum for average
+                    spnTurnSum += temp.turnaround;
+                    workingCopy.erase(workingCopy.begin() + i);
+                    continue;
+                }
+                
+                //If the process is blocked, remove it from ready queue
+                else if (temp.runningTime == temp.blockInterval) {
+                    std::cout << temp.runningTime << "\tB\n";
+                    temp.runningTime = 0;
+                    temp.blockTimeTotal = 0;
+                    queue.pop();
+                }                
+                continue;
+            }
+            
+            //now that we have checked the list based on past state
+            //increment the counter for rest of the blocked things
+            if (temp.blockTimeTotal >= 0) {
+                temp.blockTimeTotal++;
+            }
+            
+            //check if the thing arrived already before updating turnaround
+            if(time >= temp.arrivalTime){
+                temp.turnaround++;
+            }
+            
+            /********END LIST PROCESSING*********/
+        }
+        
+        //increment the passage of time
+        time ++;
+        
+        /*
+        
         //check to see if there is something new that has arrived
         //push to the ready queue
         for(int i = 0; i < workingCopy.size(); i ++){
@@ -39,12 +110,10 @@ void scheduler::spn(){
                 process temp = workingCopy.at(i);
                 queue.push(temp);
             }
-            
         }
         
         //check if something has unblocked and push to ready queue
         //reset the blocked time to 0
-        //set it to ready
         for(int i = 0; i < workingCopy.size(); i ++){
             if(workingCopy.at(i).blockTimeTotal == blockedDuration){
                 workingCopy.at(i).blockTimeTotal = -1;
@@ -80,6 +149,8 @@ void scheduler::spn(){
                 //now the thing is blocked...don't put it back on the queue
                 //update the values to reflect it is blocked
                 else {
+                    //Print this out now that blocking has begun
+                    std::cout << p.runningTime << "\tB\n";
                     p.runningTime = 0;
                     p.blockTimeTotal = 0;
                 }
@@ -99,9 +170,8 @@ void scheduler::spn(){
                 workingCopy.erase(workingCopy.begin() + i);
             }
         }
-        
-        //increment the passage of time
-        time ++;
+
+         */
     }
 
 }
