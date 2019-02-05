@@ -108,5 +108,51 @@ void scheduler::spn(){
 
 void scheduler::rr(){
     
+    int time = 0;
+    std::string nameRunning = "";
+    int cycleCounter;
+    
+    std::vector<process> wc = processes;
+    std::vector<process> ready;
+    std::vector<process> blocked;
+    
+    while(wc.empty() == false){
+    
+        //if the process arrives add it to the ready list.
+        for(int i = 0;  i < wc.size(); i++){
+            if(wc.at(i).arrivalTime == time){
+                ready.push_back(wc.at(i));
+            }
+        }
+        
+        //get the thing that should be running for printing purposes
+        process &running = ready.at(0);
+        if (ready.size() == 0){
+            nameRunning = "<idle>";
+        }
+        //if the thing hasn't finished its time slice yet then have it run again
+        else if(cycleCounter < timeSlice){
+            nameRunning = running.name;
+            running.totalTime --;
+            cycleCounter ++;
+            //case where it runs the whole way through and goes back to end of list
+            if(cycleCounter == timeSlice){
+                cycleCounter = 0;
+                //put it on the end of the list and remove the bad one
+                ready.push_back(running);
+                ready.erase(ready.begin()); 
+            }
+            else if(running.totalTime == 0){
+                ready.erase(ready.begin());
+                
+            }
+        }
+        else {
+            
+        }
+        
+        
+    }
+        
 }
 
