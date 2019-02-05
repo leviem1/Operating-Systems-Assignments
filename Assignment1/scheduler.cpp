@@ -56,8 +56,20 @@ void scheduler::spn(){
         /********BEGIN LIST PROCESSING*******/
         
         process curr = queue.top();
+        queue.pop();
         for(int i = 0; i < workingCopy.size(); i ++){
             process &temp = workingCopy.at(i);
+            
+            //now that we have checked the list based on past state
+            //increment the counter for rest of the blocked things
+            if (temp.blockTimeTotal >= 0) {
+                temp.blockTimeTotal++;
+            }
+            
+            //check if the thing arrived already before updating turnaround
+            if(time >= temp.arrivalTime){
+                temp.turnaround++;
+            }
             
             //find match to running process and "run" it
             if (temp.name == curr.name) {
@@ -83,20 +95,11 @@ void scheduler::spn(){
                     std::cout << temp.runningTime << "\tB\n";
                     temp.runningTime = 0;
                     temp.blockTimeTotal = 0;
-                    queue.pop();
-                }                
-                continue;
-            }
-            
-            //now that we have checked the list based on past state
-            //increment the counter for rest of the blocked things
-            if (temp.blockTimeTotal >= 0) {
-                temp.blockTimeTotal++;
-            }
-            
-            //check if the thing arrived already before updating turnaround
-            if(time >= temp.arrivalTime){
-                temp.turnaround++;
+                }
+                
+                else {
+                    queue.push(temp);
+                }
             }
             
             /********END LIST PROCESSING*********/
@@ -104,7 +107,7 @@ void scheduler::spn(){
         
         
         //increment the passage of time
-        time ++;
+        time++;
         
         /*
         
