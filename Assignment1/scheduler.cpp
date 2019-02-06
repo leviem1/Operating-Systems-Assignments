@@ -66,11 +66,6 @@ void scheduler::spn(){
                 temp.blockTimeTotal++;
             }
             
-            //check if the thing arrived already before updating turnaround
-            if(time >= temp.arrivalTime){
-                temp.turnaround++;
-            }
-            
             //find match to running process and "run" it
             if (temp.name == curr.name) {
                 //Assume new process
@@ -95,7 +90,7 @@ void scheduler::spn(){
                     
                 }
                 
-                //If the process is blocked, remove it from ready queue
+                //If the process is blocked
                 else if (temp.runningTime == temp.blockInterval) {
                     std::cout << temp.runningTime << "\tB\n";
                     temp.runningTime = 0;
@@ -105,6 +100,11 @@ void scheduler::spn(){
                 else {
                     queue.push(temp);
                 }
+            }
+
+            //check if the thing arrived already before updating turnaround
+            if (time >= temp.arrivalTime) {
+                temp.turnaround++;
             }
             
             
