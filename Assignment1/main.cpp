@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
     std::cout << "RR " << blockDuration << " " << timeSlice << "\n";
 
     //print header for the algorithm
-    std::cout << "SPN " << blockDuration << " " << timeSlice << "\n";
+    std::cout << "SPN " << blockDuration << "\n";
     s.spn();
     
     //close the file and end the program

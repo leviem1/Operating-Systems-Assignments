@@ -24,6 +24,8 @@ void scheduler::spn(){
     int time = 0;
     int spnTurnSum = 0;
     
+    int queueEmptyCounter = 0;
+    
     std::vector<process> workingCopy = processes;
     
     std::priority_queue<process, std::vector<process>, processOperators> 
@@ -39,7 +41,13 @@ void scheduler::spn(){
             //check to see if there is something new that has arrived
             //push to the ready queue
             if(temp.arrivalTime == time){
+                //end of idle time so print the counter value
+                if(queue.empty() && time != 0){
+                    std::cout << queueEmptyCounter - 1 << "\tI\n";
+                }
                 queue.push(temp);
+                //reset the value
+                queueEmptyCounter = 0;
                 continue;
             }
             
@@ -47,7 +55,13 @@ void scheduler::spn(){
             //reset the blocked time to 0
             if(temp.blockTimeTotal == blockedDuration){
                 temp.blockTimeTotal = -1;
+                //the end of idle time is here so print it
+                if(queue.empty() && time != 0){
+                    std::cout << queueEmptyCounter - 1 << "\tI\n";
+                }
                 queue.push(temp);
+                //reset the idle counter
+                queueEmptyCounter = 0;
                 continue;
             }
         }
@@ -55,8 +69,19 @@ void scheduler::spn(){
         /********END LIST PREPARATION********/
         /********BEGIN LIST PROCESSING*******/
         
-        process curr = queue.top();
-        queue.pop();
+        //a way to keep track of if the queue is empty so no
+        //segmentations faults
+        process curr;
+        if(queue.empty() && time != 0){
+            curr = {"invalid", -1000, -1000, -1000, -1000, -1000, -1000};
+            queueEmptyCounter ++;
+        } 
+        else {
+            curr = queue.top();
+            queue.pop();
+        }
+        
+        //going through the list of all processes that need doing
         for(int i = 0; i < workingCopy.size(); i ++){
             process &temp = workingCopy.at(i);
             
@@ -66,40 +91,54 @@ void scheduler::spn(){
                 temp.blockTimeTotal++;
             }
             
-            //find match to running process and "run" it
-            if (temp.name == curr.name) {
-                //Assume new process
-                if (temp.runningTime == 0 ) {
-                    std::cout << time << "\t" << temp.name << "\t";
-                }
+            //if there was actually something in the queue behave normal
+            if (curr.name != "invalid"){
+                //find match to running process and "run" it
+                if (temp.name == curr.name) {
+                    //Assume new process
+                    if (temp.runningTime == 0 ) {
+                        std::cout << " " << time << "\t" << temp.name << "\t";
+                    }
                 
-                temp.runningTime++;
-                temp.totalTime--;
+                    temp.runningTime++;
+                    temp.totalTime--;
                 
-                //assuming only one thing can ever change
-                //take the things finished out of the list
-                if (temp.totalTime == 0) {
-                    std::cout << temp.runningTime << "\tT\n";
-                    //add the turnaround about to be removed to sum for average
-                    spnTurnSum += temp.turnaround;
-                    workingCopy.erase(workingCopy.begin() + i );
+                    //assuming only one thing can ever change
+                    //take the things finished out of the list
+                    if (temp.totalTime == 0) {
+                        std::cout << temp.runningTime << "\tT\n";
+                        //add the turnaround about to be removed to sum for average
+                        spnTurnSum += temp.turnaround;
+                        workingCopy.erase(workingCopy.begin() + i );
                     
-                    //need to move our place in the for loop back one
-                    //since the list length is now one shorter
-                    i--;
+                        //need to move our place in the for loop back one
+                        //since the list length is now one shorter
+                        i--;
                     
+                    }
+                
+                    //If the process is blocked
+                    else if (temp.runningTime == temp.blockInterval) {
+                        std::cout << temp.runningTime << "\tB\n";
+                        temp.runningTime = 0;
+                        temp.blockTimeTotal = 0;
+                    }
+                
+                    else {
+                        queueEmptyCounter = 0;
+                        queue.push(temp);
+                    }
+                }
+            
+            }
+            
+            //nothing in the queue - deal with idle
+            else {
+                if (queueEmptyCounter == 1){
+                    std::cout << " " << time << "\t" << "<idle>" << "\t";
+                    queueEmptyCounter ++;
                 }
                 
-                //If the process is blocked
-                else if (temp.runningTime == temp.blockInterval) {
-                    std::cout << temp.runningTime << "\tB\n";
-                    temp.runningTime = 0;
-                    temp.blockTimeTotal = 0;
-                }
-                
-                else {
-                    queue.push(temp);
-                }
             }
 
             //check if the thing arrived already before updating turnaround
@@ -118,7 +157,7 @@ void scheduler::spn(){
     double averageT = 0.0;
     averageT = spnTurnSum / (double) processes.size();
     
-    std::cout << time << "\t<done>\t" << averageT << "\n"; 
+    std::cout << " " << time << "\t<done>\t" << averageT << "\n"; 
 
 }
 
