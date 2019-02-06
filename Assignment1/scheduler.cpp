@@ -43,7 +43,7 @@ void scheduler::spn(){
             if(temp.arrivalTime == time){
                 //end of idle time so print the counter value
                 if(queue.empty() && time != 0){
-                    std::cout << queueEmptyCounter - 1 << "\tI\n";
+                    //std::cout << queueEmptyCounter - 1 << "\tI\n";
                 }
                 queue.push(temp);
                 //reset the value
@@ -57,7 +57,7 @@ void scheduler::spn(){
                 temp.blockTimeTotal = -1;
                 //the end of idle time is here so print it
                 if(queue.empty() && time != 0){
-                    std::cout << queueEmptyCounter - 1 << "\tI\n";
+                    //std::cout << queueEmptyCounter - 1 << "\tI\n";
                 }
                 queue.push(temp);
                 //reset the idle counter
@@ -97,7 +97,7 @@ void scheduler::spn(){
                 if (temp.name == curr.name) {
                     //Assume new process
                     if (temp.runningTime == 0 ) {
-                        std::cout << " " << time << "\t" << temp.name << "\t";
+                        //std::cout << " " << time << "\t" << temp.name << "\t";
                     }
                 
                     temp.runningTime++;
@@ -106,20 +106,25 @@ void scheduler::spn(){
                     //assuming only one thing can ever change
                     //take the things finished out of the list
                     if (temp.totalTime == 0) {
-                        std::cout << temp.runningTime << "\tT\n";
+                        //std::cout << temp.runningTime << "\tT\n";
                         //add the turnaround about to be removed to sum for average
                         spnTurnSum += temp.turnaround;
                         workingCopy.erase(workingCopy.begin() + i );
+                        
+                        std::cout << "after erase \n";
+                        for (int j = 0; j < workingCopy.size(); j++){
+                            //std::cout << workingCopy.at(j).name << '\n';
+                        }
                     
                         //need to move our place in the for loop back one
                         //since the list length is now one shorter
-                        i--;
+                        //i--;
                     
                     }
                 
                     //If the process is blocked
                     else if (temp.runningTime == temp.blockInterval) {
-                        std::cout << temp.runningTime << "\tB\n";
+                        //std::cout << temp.runningTime << "\tB\n";
                         temp.runningTime = 0;
                         temp.blockTimeTotal = 0;
                     }
@@ -135,7 +140,7 @@ void scheduler::spn(){
             //nothing in the queue - deal with idle
             else {
                 if (queueEmptyCounter == 1){
-                    std::cout << " " << time << "\t" << "<idle>" << "\t";
+                    //std::cout << " " << time << "\t" << "<idle>" << "\t";
                     queueEmptyCounter ++;
                 }
                 
@@ -144,6 +149,7 @@ void scheduler::spn(){
             //check if the thing arrived already before updating turnaround
             if (time >= temp.arrivalTime) {
                 temp.turnaround++;
+                std::cout << temp.name << " " << temp.turnaround << '\n';
             }
             
             
@@ -152,11 +158,12 @@ void scheduler::spn(){
         
         //increment the passage of time
         time++;
+        std::cout <<'\n';
     }
     
     double averageT = 0.0;
     averageT = spnTurnSum / (double) processes.size();
-    
+    std::cout << spnTurnSum << '\n';
     std::cout << " " << time << "\t<done>\t" << averageT << "\n"; 
 
 }
