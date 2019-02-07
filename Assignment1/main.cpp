@@ -36,7 +36,7 @@ process parseProcess(std::string processInfo){
     
     //create a process to return 
     process p = {name, arrivalTime, totalTime, 
-        blockInterval, -1, 0, 0};
+        blockInterval, -1, 0, 0, 0};
     return p;
 }
 

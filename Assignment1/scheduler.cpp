@@ -68,7 +68,7 @@ void scheduler::spn(){
         //a way to keep track of if the queue is empty so no seg faults
         process curr;
         if(readyQueue.empty() && time != 0){
-            curr = {"invalid", -1000, -1000, -1000, -1000, -1000, -1000};
+            curr = {"invalid", -1000, -1000, -1000, -1000, -1000, -1000, -1000};
             queueEmptyCounter ++;
         } 
         else {
@@ -153,8 +153,8 @@ void scheduler::rr(){
     
     int time = 0;
     bool idle = false;
-    int idleCount;
-    int rrTurnSum;
+    int idleCount = 0;
+    int rrTurnSum = 0;
     
     std::vector<process> wc = processes;
     std::vector<process> ready;
@@ -191,7 +191,14 @@ void scheduler::rr(){
             //the CPU is idle this cycle 
             if(ready.empty()){
                 idle = true;
+            } else {
+                idle = false;
             }
+        }
+        
+        //the first round the thing is idle print the header
+        if(idle && idleCount == 0){
+            std::cout << " " << time << "\t" << "<idle>" << "\t";
         }
         
         //process the lists as needed
@@ -210,13 +217,9 @@ void scheduler::rr(){
                 temp.turnaround ++;
             }
             
-            //if we are idle update the counter with how long it has been
+            //if we are idle nothing more to do
             if(idle){
-                //this is the first time its gone idle print the thing
-                if (idleCount == 0){
-                    std::cout << " " << time << "\t" << "<idle>" << "\t";
-                }
-                idleCount ++; 
+                
             } 
             
             //the CPU is not idle...do stuff
@@ -227,17 +230,18 @@ void scheduler::rr(){
                  //find match to running process and "run" it
                 if (temp.name == curr.name) {
                     //Assume new process
-                    if (temp.runningTime == 0 ) {
+                    if (temp.sliceTime == 0 ) {
                         std::cout << " " << time << "\t" << temp.name << "\t";
                     }
 
                     temp.runningTime++;
+                    temp.sliceTime ++;
                     temp.totalTime--;
                 
                     //assuming only one thing can ever change
                     //take the things finished out of the list
                     if (temp.totalTime == 0) {
-                        std::cout << temp.runningTime << "\tT\n";
+                        std::cout << temp.sliceTime << "\tT\n";
                         //add the turnaround about to be removed to sum for average
                         rrTurnSum += temp.turnaround;
                         ready.erase(ready.begin());
@@ -251,17 +255,19 @@ void scheduler::rr(){
                 
                     //If the process is blocked
                     else if (temp.runningTime == temp.blockInterval) {
-                        std::cout << temp.runningTime << "\tB\n";
+                        std::cout << temp.sliceTime << "\tB\n";
                         temp.runningTime = 0;
+                        temp.sliceTime = 0;
                         temp.blockTimeTotal = 0;
                         //remove the thing that has blocked from ready
                         ready.erase(ready.begin());
                     }
                     
                     //a process has ended its time slice add to the back of list
-                    else if (temp.runningTime == timeSlice){
-                        std::cout << temp.runningTime << "\tS\n";
-                        temp.runningTime = 0;
+                    else if (temp.sliceTime == timeSlice){
+                        //running time back to 0
+                        std::cout << temp.sliceTime << "\tS\n";
+                        temp.sliceTime = 0;
                         //move the sliced thing to back of list
                         ready.erase(ready.begin());
                         ready.push_back(temp);
@@ -278,6 +284,9 @@ void scheduler::rr(){
             }
         }
         
+        if(idle){
+            idleCount ++;
+        }
         time ++;
         
     }
