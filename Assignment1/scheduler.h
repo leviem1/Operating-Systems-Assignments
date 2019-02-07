@@ -17,7 +17,7 @@ struct process{
     std::string name;
     int arrivalTime;    // time process arrives
     int totalTime;      // time process needs to end
-    int blockInterval;  // how often the process will be blocked
+    int blockInterval;  // how long the process runs before blocking
     int blockTimeTotal; // if >= 0 then amount time its been blocked. = -1 not blocked
     int turnaround;     //total amount of time between arrival and completion
     int runningTime;    // if > 0 then amount time running. = 0 its hasn't started

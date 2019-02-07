@@ -96,6 +96,7 @@ int main(int argc, char** argv) {
 
     //TODO: add round robin
     std::cout << "RR " << blockDuration << " " << timeSlice << "\n";
+    s.rr();
 
     //print header for the algorithm
     std::cout << "SPN " << blockDuration << "\n";

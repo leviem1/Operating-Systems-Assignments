@@ -169,46 +169,63 @@ void scheduler::spn(){
 void scheduler::rr(){
     
     int time = 0;
-    std::string nameRunning = "";
-    int cycleCounter;
+    bool idle = false;
+    int idleCount;
     
     std::vector<process> wc = processes;
     std::vector<process> ready;
-    std::vector<process> blocked;
     
     while(wc.empty() == false){
     
-        //if the process arrives add it to the ready list.
+        //prepare the list 
         for(int i = 0;  i < wc.size(); i++){
+            process &temp = wc.at(i);
+            
+            //add new things to the ready list
             if(wc.at(i).arrivalTime == time){
                 ready.push_back(wc.at(i));
             }
+            
+            //add things that have just achieved status unblocked
+            if(temp.blockTimeTotal == blockedDuration){
+                temp.blockTimeTotal = -1;
+                ready.push_back(temp);
+                continue;
+            } 
+            
+            //the cpu is idle this cycle 
+            if(ready.empty()){
+                idle = true;
+            }
         }
         
-        //get the thing that should be running for printing purposes
-        process &running = ready.at(0);
-        if (ready.size() == 0){
-            nameRunning = "<idle>";
-        }
-        //if the thing hasn't finished its time slice yet then have it run again
-        else if(cycleCounter < timeSlice){
-            nameRunning = running.name;
-            running.totalTime --;
-            cycleCounter ++;
-            //case where it runs the whole way through and goes back to end of list
-            if(cycleCounter == timeSlice){
-                cycleCounter = 0;
-                //put it on the end of the list and remove the bad one
-                ready.push_back(running);
-                ready.erase(ready.begin()); 
+        //process the lists as needed
+        for (int i = 0; i < wc.size(); i ++){
+            //temp process to keep track of where we are in the list
+            process &temp = wc.at(i);
+            
+            //go through and update the block list 
+            //happens whether the CPU is idle or not
+            if (temp.blockTimeTotal >= 0) {
+                    temp.blockTimeTotal++;
             }
-            else if(running.totalTime == 0){
-                ready.erase(ready.begin());
+            
+            //if we are idle update the counter with how long it has been
+            if(idle){
+                //this is the first time its gone idle print the thing
+                if (idleCount == 0){
+                    std::cout << " " << time << "\t" << "<idle>" << "\t";
+                }
+                idleCount ++; 
+            } 
+            
+            //the CPU is not idle...do stuff
+            else {
+                process curr = wc.begin();
+               
+                
                 
             }
-        }
-        else {
-            
         }
         
         
