@@ -29,7 +29,7 @@ void scheduler::spn(){
     std::vector<process> workingCopy = processes;
     
     std::priority_queue<process, std::vector<process>, processOperators> 
-        queue;
+        readyQueue;
     
     //if there's stuff to do
     while(!workingCopy.empty()){
@@ -42,10 +42,10 @@ void scheduler::spn(){
             //push to the ready queue
             if(temp.arrivalTime == time){
                 //end of idle time so print the counter value
-                if(queue.empty() && time != 0){
-                    //std::cout << queueEmptyCounter - 1 << "\tI\n";
+                if(readyQueue.empty() && time != 0){
+                    std::cout << queueEmptyCounter - 1 << "\tI\n";
                 }
-                queue.push(temp);
+                readyQueue.push(temp);
                 //reset the value
                 queueEmptyCounter = 0;
                 continue;
@@ -56,10 +56,10 @@ void scheduler::spn(){
             if(temp.blockTimeTotal == blockedDuration){
                 temp.blockTimeTotal = -1;
                 //the end of idle time is here so print it
-                if(queue.empty() && time != 0){
-                    //std::cout << queueEmptyCounter - 1 << "\tI\n";
+                if(readyQueue.empty() && time != 0){
+                    std::cout << queueEmptyCounter - 1 << "\tI\n";
                 }
-                queue.push(temp);
+                readyQueue.push(temp);
                 //reset the idle counter
                 queueEmptyCounter = 0;
                 continue;
@@ -72,13 +72,13 @@ void scheduler::spn(){
         //a way to keep track of if the queue is empty so no
         //segmentations faults
         process curr;
-        if(queue.empty() && time != 0){
+        if(readyQueue.empty() && time != 0){
             curr = {"invalid", -1000, -1000, -1000, -1000, -1000, -1000};
             queueEmptyCounter ++;
         } 
         else {
-            curr = queue.top();
-            queue.pop();
+            curr = readyQueue.top();
+            readyQueue.pop();
         }
         
         //going through the list of all processes that need doing
@@ -91,13 +91,19 @@ void scheduler::spn(){
                 temp.blockTimeTotal++;
             }
             
+            //check if the thing arrived already before updating turnaround
+            if (time >= temp.arrivalTime) {
+                temp.turnaround++;
+                //std::cout << temp.name << " " << temp.turnaround << '\n';
+            }
+            
             //if there was actually something in the queue behave normal
             if (curr.name != "invalid"){
                 //find match to running process and "run" it
                 if (temp.name == curr.name) {
                     //Assume new process
                     if (temp.runningTime == 0 ) {
-                        //std::cout << " " << time << "\t" << temp.name << "\t";
+                        std::cout << " " << time << "\t" << temp.name << "\t";
                     }
                 
                     temp.runningTime++;
@@ -106,32 +112,32 @@ void scheduler::spn(){
                     //assuming only one thing can ever change
                     //take the things finished out of the list
                     if (temp.totalTime == 0) {
-                        //std::cout << temp.runningTime << "\tT\n";
+                        std::cout << temp.runningTime << "\tT\n";
                         //add the turnaround about to be removed to sum for average
                         spnTurnSum += temp.turnaround;
                         workingCopy.erase(workingCopy.begin() + i );
                         
-                        std::cout << "after erase \n";
-                        for (int j = 0; j < workingCopy.size(); j++){
-                            //std::cout << workingCopy.at(j).name << '\n';
-                        }
+//                        std::cout << "after erase \n";
+//                        for (int j = 0; j < workingCopy.size(); j++){
+//                            //std::cout << workingCopy.at(j).name << '\n';
+//                        }
                     
                         //need to move our place in the for loop back one
                         //since the list length is now one shorter
-                        //i--;
+                        i--;
                     
                     }
                 
                     //If the process is blocked
                     else if (temp.runningTime == temp.blockInterval) {
-                        //std::cout << temp.runningTime << "\tB\n";
+                        std::cout << temp.runningTime << "\tB\n";
                         temp.runningTime = 0;
                         temp.blockTimeTotal = 0;
                     }
                 
                     else {
                         queueEmptyCounter = 0;
-                        queue.push(temp);
+                        readyQueue.push(temp);
                     }
                 }
             
@@ -140,16 +146,10 @@ void scheduler::spn(){
             //nothing in the queue - deal with idle
             else {
                 if (queueEmptyCounter == 1){
-                    //std::cout << " " << time << "\t" << "<idle>" << "\t";
+                    std::cout << " " << time << "\t" << "<idle>" << "\t";
                     queueEmptyCounter ++;
                 }
                 
-            }
-
-            //check if the thing arrived already before updating turnaround
-            if (time >= temp.arrivalTime) {
-                temp.turnaround++;
-                std::cout << temp.name << " " << temp.turnaround << '\n';
             }
             
             
@@ -158,12 +158,10 @@ void scheduler::spn(){
         
         //increment the passage of time
         time++;
-        std::cout <<'\n';
     }
     
     double averageT = 0.0;
     averageT = spnTurnSum / (double) processes.size();
-    std::cout << spnTurnSum << '\n';
     std::cout << " " << time << "\t<done>\t" << averageT << "\n"; 
 
 }
