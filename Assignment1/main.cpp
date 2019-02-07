@@ -13,6 +13,13 @@
 #include <sstream>
 #include <vector>
 
+/**
+ * takes a string line, from a file in this case and creates a 
+ * process struct with the corresponding data and default values for the 
+ * fields that are needed to perform the algorithm
+ * @param processInfo - the string from the file with first 4 data members
+ * @return a process struct
+ */
 process parseProcess(std::string processInfo){
     //the strings as they occur in the format of the file
     std::string name;
@@ -41,7 +48,6 @@ int main(int argc, char** argv) {
         return 1;
     }
     
-    
     //collect all info frome the arguments passed
     std::string filename = argv[1];
     //convert the string arguments into integers for use
@@ -55,28 +61,7 @@ int main(int argc, char** argv) {
     if(blockDuration == 0L){
         std::cerr << "Conversion error on timeSlice argument\n";
     }
-    
-    
-    /*
-    std::cout << "start of the testing code" << '\n';
-    std::vector<process> testCase;
-    process tester1 = {"test", 1, 2, 6, 0, false, 0, 0};
-    process tester2 = {"test2", 4, 5, 10, 0, false, 0, 4};
-    process tester3 = {"test3", 7, 8, 9, 0, false, 0, 0};
-    testCase.push_back(tester1);
-    testCase.push_back(tester2);
-    testCase.push_back(tester3);
-    std::priority_queue<process, std::vector<process>, processOperators> c3(testCase.begin(), testCase.end());
-    std::cout<< c3.top().name << '\n';
-    c3.pop();
-    std::cout<< c3.top().name << '\n';
-    c3.pop();
-    std::cout<< c3.top().name << '\n';
-    std::cout << "end of the testing code" << '\n';
-    
-    return 0;
-    */
-    
+   
     //open the file and throw errors as needed
     std::ifstream myFile(filename);
     if (!myFile.is_open() || !myFile.good()) {
@@ -94,11 +79,11 @@ int main(int argc, char** argv) {
 
     scheduler s(processVector, blockDuration, timeSlice);
 
-    //TODO: add round robin
+    //run and print round robin 
     std::cout << "RR " << blockDuration << " " << timeSlice << "\n";
     s.rr();
 
-    //print header for the algorithm
+    //run and print shortest process next
     std::cout << "SPN " << blockDuration << "\n";
     s.spn();
     
