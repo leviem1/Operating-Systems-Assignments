@@ -1,3 +1,6 @@
 build/
 dist/
 private/
+.idea/
+cmake-build-debug/
+CMakeLists\.txt
