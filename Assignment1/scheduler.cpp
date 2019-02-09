@@ -250,7 +250,7 @@ void scheduler::rr(){
                 else if (temp.runningTime == temp.blockInterval) {
                     std::cout << temp.sliceTime << "\tB\n";
                     temp.runningTime = 0;
-                    temp.sliceTime = -1;
+                    temp.sliceTime = 0;
                     temp.blockTimeTotal = 0;
                     //remove the thing that has blocked from ready
                     ready.erase(ready.begin());
@@ -260,7 +260,7 @@ void scheduler::rr(){
                 else if (temp.sliceTime == timeSlice){
                     //running time back to 0
                     std::cout << temp.sliceTime << "\tS\n";
-                    temp.sliceTime = 0;
+                    temp.sliceTime = -1;
                     //move the sliced thing to back of lists
                     ready.erase(ready.begin());
                     wc.erase(wc.begin() + i);
