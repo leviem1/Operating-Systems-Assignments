@@ -144,8 +144,7 @@ void scheduler::spn(){
         time++;
     }
     //calculate the average turnaround time and print
-    double averageT = 0.0;
-    averageT = spnTurnSum / (double) processes.size();
+    double averageT = spnTurnSum / (double) processes.size();
     std::cout << " " << time << "\t<done>\t" << averageT << "\n"; 
 }
 
@@ -162,7 +161,7 @@ void scheduler::rr(){
         /*******BEGIN LIST PREPARATION*******/
         for(int i = 0;  i < wc.size(); i++){
             process &temp = wc.at(i);
-            
+
             //add new things to the ready list
             if(temp.arrivalTime == time){
                 ready.push_back(temp);
@@ -175,7 +174,12 @@ void scheduler::rr(){
                 ready.push_back(temp);
                 continue;
             }
+
+            if (temp.sliceTime == -1) {
+                ready.push_back(temp);
+            }
         }
+
         /********END LIST PREPARATION********/
 
         //If no longer idle, print idle time
@@ -246,7 +250,7 @@ void scheduler::rr(){
                 else if (temp.runningTime == temp.blockInterval) {
                     std::cout << temp.sliceTime << "\tB\n";
                     temp.runningTime = 0;
-                    temp.sliceTime = 0;
+                    temp.sliceTime = -1;
                     temp.blockTimeTotal = 0;
                     //remove the thing that has blocked from ready
                     ready.erase(ready.begin());
@@ -257,9 +261,10 @@ void scheduler::rr(){
                     //running time back to 0
                     std::cout << temp.sliceTime << "\tS\n";
                     temp.sliceTime = 0;
-                    //move the sliced thing to back of list
+                    //move the sliced thing to back of lists
                     ready.erase(ready.begin());
-                    ready.push_back(temp);
+                    wc.erase(wc.begin() + i);
+                    wc.push_back(temp);
                 }
             }
         }
