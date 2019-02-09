@@ -150,150 +150,126 @@ void scheduler::spn(){
 }
 
 void scheduler::rr(){
-    
     int time = 0;
-    bool idle = false;
-    int idleCount = 0;
     int rrTurnSum = 0;
-    
+    int idleCount = -1;  //if >= 0 how long we've been idle, -1 if not idle
+
     std::vector<process> wc = processes;
     std::vector<process> ready;
     
-    while(wc.empty() == false){
-    
-        //prepare the list 
+    while(!wc.empty()){
+
+        /*******BEGIN LIST PREPARATION*******/
         for(int i = 0;  i < wc.size(); i++){
             process &temp = wc.at(i);
             
             //add new things to the ready list
             if(temp.arrivalTime == time){
-                //if the thing has been idle finish the print out...it's not now
-                if(idle){
-                    std::cout << idleCount << "\tI\n";
-                    idle = false;
-                    idleCount = 0;
-                }
                 ready.push_back(temp);
+                continue;
             }
             
             //add things that have just achieved status unblocked
             if(temp.blockTimeTotal == blockedDuration){
-                //if the thing has been idle finish the print out...it's not now
-                if(idle){
-                    std::cout << idleCount << "\tI\n";
-                    idle = false;
-                    idleCount = 0;
-                }
                 temp.blockTimeTotal = -1;
                 ready.push_back(temp);
-            } 
-            
-            //the CPU is idle this cycle 
-            if(ready.empty()){
-                idle = true;
-            } else {
-                idle = false;
+                continue;
             }
         }
-        
-        //the first round the thing is idle print the header
-        if(idle && idleCount == 0){
+        /********END LIST PREPARATION********/
+
+        //If no longer idle, print idle time
+        if (!ready.empty() && idleCount >= 0) {
+            std::cout << idleCount << "\tI\n";
+            idleCount = -1;
+        }
+
+        //if just became idle, print header
+        else if (ready.empty() && idleCount == -1) {
+            idleCount = 0;
             std::cout << " " << time << "\t" << "<idle>" << "\t";
         }
-        
-        //process the lists as needed
+
+        process curr;
+        //the CPU is not idle...do stuff
+        if (idleCount == -1) {
+            //get the first thing that is "running"
+            curr = ready.at(0);
+        } else {
+            curr = {"invalid", -1000, -1000, -1000, -1000, -1000, -1000, -1000};
+        }
+
+        /********BEGIN LIST PROCESSING*******/
         for (int i = 0; i < wc.size(); i ++){
+
             //temp process to keep track of where we are in the list
             process &temp = wc.at(i);
-            
-            //go through and update the block list 
+
+            //go through and update the block list
             //happens whether the CPU is idle or not
             if (temp.blockTimeTotal >= 0) {
                     temp.blockTimeTotal++;
             }
-            
+
             //update the turnaround for everything that has arrived
             if(temp.arrivalTime <= time){
-                temp.turnaround ++;
+                temp.turnaround++;
             }
-            
-            //if we are idle nothing more to do
-            if(idle){
-                
-            } 
-            
-            //the CPU is not idle...do stuff
-            else {
-                //get the first thing that is "running"
-                process curr = ready.at(0);
-                
-                 //find match to running process and "run" it
-                if (temp.name == curr.name) {
-                    //Assume new process
-                    if (temp.sliceTime == 0 ) {
-                        std::cout << " " << time << "\t" << temp.name << "\t";
-                    }
 
-                    temp.runningTime++;
-                    temp.sliceTime ++;
-                    temp.totalTime--;
-                
-                    //assuming only one thing can ever change
-                    //take the things finished out of the list
-                    if (temp.totalTime == 0) {
-                        std::cout << temp.sliceTime << "\tT\n";
-                        //add the turnaround about to be removed to sum for average
-                        rrTurnSum += temp.turnaround;
-                        ready.erase(ready.begin());
-                        wc.erase(wc.begin() + i );
-                    
-                        //need to move our place in the for loop back one
-                        //since the list length is now one shorter
-                        i--;
-                    
-                    }
-                
-                    //If the process is blocked
-                    else if (temp.runningTime == temp.blockInterval) {
-                        std::cout << temp.sliceTime << "\tB\n";
-                        temp.runningTime = 0;
-                        temp.sliceTime = 0;
-                        temp.blockTimeTotal = 0;
-                        //remove the thing that has blocked from ready
-                        ready.erase(ready.begin());
-                    }
-                    
-                    //a process has ended its time slice add to the back of list
-                    else if (temp.sliceTime == timeSlice){
-                        //running time back to 0
-                        std::cout << temp.sliceTime << "\tS\n";
-                        temp.sliceTime = 0;
-                        //move the sliced thing to back of list
-                        ready.erase(ready.begin());
-                        ready.push_back(temp);
-                        
-                    }
-                
-                    else {
-                        
-                    }
+            //find match to running process and "run" it
+            if (temp.name == curr.name) {
+
+                //Assume new process
+                if (temp.sliceTime == 0 ) {
+                    std::cout << " " << time << "\t" << temp.name << "\t";
                 }
-               
-                
-                
+
+                temp.runningTime++;
+                temp.sliceTime++;
+                temp.totalTime--;
+
+                //assuming only one thing can ever change
+                //take the things finished out of the list
+                if (temp.totalTime == 0) {
+                    std::cout << temp.sliceTime << "\tT\n";
+                    //add the turnaround about to be removed to sum for average
+                    rrTurnSum += temp.turnaround;
+                    ready.erase(ready.begin());
+                    wc.erase(wc.begin() + i );
+
+                    //need to move our place in the for loop back one
+                    //since the list length is now one shorter
+                    i--;
+                }
+
+                //If the process is blocked
+                else if (temp.runningTime == temp.blockInterval) {
+                    std::cout << temp.sliceTime << "\tB\n";
+                    temp.runningTime = 0;
+                    temp.sliceTime = 0;
+                    temp.blockTimeTotal = 0;
+                    //remove the thing that has blocked from ready
+                    ready.erase(ready.begin());
+                }
+
+                //a process has ended its time slice add to the back of list
+                else if (temp.sliceTime == timeSlice){
+                    //running time back to 0
+                    std::cout << temp.sliceTime << "\tS\n";
+                    temp.sliceTime = 0;
+                    //move the sliced thing to back of list
+                    ready.erase(ready.begin());
+                    ready.push_back(temp);
+                }
             }
         }
-        
-        if(idle){
-            idleCount ++;
-        }
-        time ++;
-        
+        /********END LIST PROCESSING*********/
+
+        if(idleCount >= 0) idleCount++;
+        time++;
     }
     
-    double averageT = 0.0;
-    averageT = rrTurnSum / (double) processes.size();
-    std::cout << " " << time << "\t<done>\t" << averageT << "\n"; 
-        
+    double averageT = rrTurnSum / (double) processes.size();
+    std::cout << " " << time << "\t<done>\t" << averageT << "\n";
 }
 
