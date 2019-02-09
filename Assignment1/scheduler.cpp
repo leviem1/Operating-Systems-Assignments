@@ -176,6 +176,7 @@ void scheduler::rr(){
             }
 
             if (temp.sliceTime == -1) {
+                temp.sliceTime = 0;
                 ready.push_back(temp);
             }
         }
@@ -204,7 +205,7 @@ void scheduler::rr(){
         }
 
         /********BEGIN LIST PROCESSING*******/
-        for (int i = 0; i < wc.size(); i ++){
+        for (int i = 0, j = wc.size(); i < j; i ++){
 
             //temp process to keep track of where we are in the list
             process &temp = wc.at(i);
@@ -244,6 +245,7 @@ void scheduler::rr(){
                     //need to move our place in the for loop back one
                     //since the list length is now one shorter
                     i--;
+                    j--;
                 }
 
                 //If the process is blocked
@@ -265,6 +267,10 @@ void scheduler::rr(){
                     ready.erase(ready.begin());
                     wc.erase(wc.begin() + i);
                     wc.push_back(temp);
+
+                    //because we processed this and moved it to the back, change counters to reset location and stop processing
+                    i--;
+                    j--;
                 }
             }
         }
