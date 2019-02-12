@@ -20,16 +20,15 @@ Process::Process(const std::string &filename) {
     
     //initialize member variables
     line = 1;
-    mem = new std::vector<std::uint8_t>;  
  }
 
 Process::~Process() {
     if (file && file->is_open()) {
         file->close();
     }
-    
-    if (mem) delete mem;
-    if (file) delete file;
+
+    delete mem;
+    delete file;
     
     file = nullptr;
     mem = nullptr;
@@ -72,7 +71,7 @@ void Process::Exec(){
         // set command
         else if (word == "set"){
             std::vector<std::uint8_t> v;
-            int value;
+            std::uint8_t value;
             
             //collect all the values that we need to set into a vector
             while(s){
@@ -85,7 +84,7 @@ void Process::Exec(){
         
         //fill command
         else if (word == "fill") {
-            int value;
+            std::uint8_t value;
             int count;
             s >> std::hex >> value;
             s >> std::hex >> count;
@@ -120,11 +119,16 @@ void Process::memsize(int address){
         throw std::runtime_error{ "Error: memsize command address "
                 "size is too large"};
     }
-    
+
+    int result = std::ceil(address / mem::kPageSize);
+
     //initialize and fill vector with zeros
-    mem->resize(address);
-    for(int i = 0; i < mem->size() - 1; i++){
-        mem->at(i) = 0;
+    mem = new mem::MMU(result);
+    
+    for (int i = 0; i < address; i++) {
+        std::uint8_t val = 0;
+        mem::Addr addr = i;
+        mem->movb(addr, &val);
     }
 }
 
@@ -132,19 +136,22 @@ void Process::cmp(int address1, int address2, int count) {
     //check each memory address
     for (int offset = 0; offset < count; offset++) {
         //convenience variables for cleaner code
-        int addressA = address1 + offset;
-        int addressB = address2 + offset;
-        int valA = mem->at(addressA);
-        int valB = mem->at(addressB);
+        mem::Addr addressA = address1 + offset;
+        mem::Addr addressB = address2 + offset;
+        std::uint8_t valA;
+        std::uint8_t valB;
+        mem->movb(&valA, addressA);
+        mem->movb(&valB, addressB);
         
         //if mismatch found, print information
         if (valA != valB) {
             std::cerr << "cmp error, addr1 = " << std::setfill('0')
                     << std::setw(7) << std::hex << addressA << ", value = "
-                    << std::setfill('0') << std::setw(2) << std::hex << valA
-                    << ", addr2 = " << std::setfill('0') << std::setw(7)
-                    << std::hex << addressB << ", value = " << std::setfill('0')
-                    << std::setw(2) << std::hex << valB << "\n";
+                    << std::setfill('0') << std::setw(2) << std::hex
+                    << (std::uint32_t) valA << ", addr2 = " << std::setfill('0')
+                    << std::setw(7) << std::hex << addressB << ", value = "
+                    << std::setfill('0')<< std::setw(2) << std::hex
+                    << (std::uint32_t) valB << "\n";
         }
     }
 }
@@ -153,19 +160,29 @@ void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
     //then assign the values
     for(int offset = 0; offset < v.size() - 1; offset++){
-        mem->at(address + offset) = v.at(offset);
+        mem::Addr addr = address + offset;
+        std::uint8_t val = v.at(offset);
+
+        mem->movb(addr, &val);
     }
 }
 
-void Process::fill(int address, int value, int count) {
+void Process::fill(int address, std::uint8_t value, int count) {
     //fill the vector of memory from the front with a value count times
-    std::fill_n(mem->begin() + address, count, value);
+    for (int i = 0; i < count; i++) {
+        mem::Addr addr = address + i;
+        mem->movb(addr, &value);
+    }
 }
 
 void Process::dup(int src_address, int dest_address, int count) {
     //find the value at the address and copy it to the new one, use i as offset
     for (int i = 0; i < count; i++) {
-        mem->at(dest_address +  i) = mem->at(src_address +  i);
+        std::uint8_t val;
+        mem::Addr curr_src = src_address +  i;
+        mem::Addr curr_dest = dest_address +  i;
+        mem->movb(&val, curr_src);
+        mem->movb(curr_dest, &val);
     }
 }
 
@@ -184,8 +201,12 @@ void Process::print(int address, int count){
          //so long as we have stuff to print that fits in the row
          //print it accounting for total changes
          for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
+             mem::Addr addr = address + placeHolderTotal + j;
+             std::uint8_t val;
+             mem->movb(addr, &val);
+
               std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
-                    << (int) mem->at(address + placeHolderTotal + j);
+                    << (std::uint32_t) val;
               placeHolderRow ++;  
         }
          
