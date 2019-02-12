@@ -120,10 +120,12 @@ void Process::memsize(int address){
                 "size is too large"};
     }
 
-    int result = std::ceil(address / mem::kPageSize);
+    int result = std::ceil((double) address / (double) mem::kPageSize);
+    
 
     //initialize and fill vector with zeros
     mem = new mem::MMU(result);
+    std::uint8_t val = 0;
     
     for (int i = 0; i < address; i++) {
         std::uint8_t val = 0;
