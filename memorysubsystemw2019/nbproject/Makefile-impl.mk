@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=MemorySubsystemW2019
+PROJECTNAME=memorysubsystemw2019
 
 # Active Configuration
 DEFAULTCONF=Debug

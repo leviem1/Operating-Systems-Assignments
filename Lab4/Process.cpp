@@ -203,7 +203,7 @@ void Process::print(int address, int count){
          for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
              mem::Addr addr = address + placeHolderTotal + j;
              std::uint8_t val;
-             mem->movb(addr, &val);
+             mem->movb(&val, addr);
 
               std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
                     << (std::uint32_t) val;

@@ -267,12 +267,17 @@ void scheduler::rr(){
                     temp.sliceTime = -1;
                     //move the sliced thing to back of lists
                     ready.erase(ready.begin());
+<<<<<<< Updated upstream
                     wc.erase(wc.begin() + i);
                     wc.push_back(temp);
 
                     //because we processed this and moved it to the back, change counters to reset location and stop processing
                     i--;
                     j--;
+=======
+                    //wc.erase(wc.begin() + i);
+                    //wc.push_back(temp);
+>>>>>>> Stashed changes
                 }
             }
         }
@@ -280,9 +285,13 @@ void scheduler::rr(){
 
         if(idleCount >= 0) idleCount++;
         time++;
+        
+       
     }
     
     double averageT = rrTurnSum / (double) processes.size();
     std::cout << " " << time << "\t<done>\t" << averageT << "\n";
+    
+  
 }
 
