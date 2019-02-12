@@ -39,6 +39,9 @@
       <compileType>
         <ccTool>
           <standard>11</standard>
+          <incDir>
+            <pElem>../memorysubsystemw2019</pElem>
+          </incDir>
         </ccTool>
       </compileType>
       <item path="Process.cpp" ex="false" tool="1" flavor2="0">
@@ -61,6 +64,9 @@
         <ccTool>
           <developmentMode>5</developmentMode>
           <standard>11</standard>
+          <incDir>
+            <pElem>../memorysubsystemw2019</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
