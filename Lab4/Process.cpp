@@ -2,7 +2,7 @@
  * File:   Process.cpp
  * Authors: Elisabeth Bristol and Levi Muniz
  * 
- * Created on January 18, 2019, 4:44 PM
+ * Created on February 11, 2019, 4:44 PM
  */
 
 #include "Process.h"
@@ -130,6 +130,7 @@ void Process::memsize(int address){
     for (int i = 0; i < address; i++) {
         int val = 0;
         mem::Addr addr = i;
+        //store one address at a time
         mem->movb(addr, &val);
     }
 }
@@ -142,6 +143,7 @@ void Process::cmp(int address1, int address2, int count) {
         mem::Addr addressB = address2 + offset;
         std::uint8_t valA;
         std::uint8_t valB;
+        //get from memory version
         mem->movb(&valA, addressA);
         mem->movb(&valB, addressB);
         
@@ -164,7 +166,7 @@ void Process::set(int address, std::vector<std::uint8_t> &v){
     for(int offset = 0; offset < v.size() - 1; offset++){
         mem::Addr addr = address + offset;
         int val = v.at(offset);
-
+        //add to the memory
         mem->movb(addr, &val);
     }
 }
@@ -205,6 +207,7 @@ void Process::print(int address, int count){
          for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
              mem::Addr addr = address + placeHolderTotal + j;
              uint8_t val;
+             //specifically get one thing at a time to cast to int to print
              mem->movb(&val, addr, 1);
 
               std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
