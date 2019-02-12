@@ -74,7 +74,7 @@ private:
      * @param count - the number of times we add that value
      * @return - void
      */
-    void fill(int address, uint8_t value, int count);
+    void fill(int address, int value, int count);
 
     /*dup - copies a number of bytes starting at one location to new
      * @param src_address - the starting location for the copy
