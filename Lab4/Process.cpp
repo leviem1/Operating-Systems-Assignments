@@ -77,6 +77,7 @@ void Process::Exec(){
             while(s){
                 s >> std::hex >> value;
                 v.push_back(value);
+                std::cout << '\n' << value << '\n';
             }
                        
             set(memAddress, v);
