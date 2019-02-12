@@ -78,7 +78,7 @@ void Process::Exec(){
                 s >> std::hex >> value;
                 v.push_back(value);
             }
-                                    
+                       
             set(memAddress, v);
         }
         
@@ -161,7 +161,7 @@ void Process::cmp(int address1, int address2, int count) {
 void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
     //then assign the values
-    for(int offset = 0; offset < v.size() - 1; offset++){
+    for(int offset = 0; offset < v.size(); offset++){
         mem::Addr addr = address + offset;
         std::uint8_t val = v.at(offset);
 
@@ -205,10 +205,10 @@ void Process::print(int address, int count){
          for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
              mem::Addr addr = address + placeHolderTotal + j;
              std::uint8_t val;
-             mem->movb(&val, addr);
+             mem->movb(&val, addr, 1);
 
-              std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
-                    << (std::uint32_t) val;
+              std::cout << " " << std::hex 
+                    << val;
               placeHolderRow ++;  
         }
          
