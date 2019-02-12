@@ -1,24 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   main.cpp
- * Author: muniz
+ * Authors: Elisabeth Bristol and Levi Muniz
  *
- * Created on February 11, 2019, 7:42 PM
+ * Created on January 14, 2019, 1:27 PM
  */
 
-#include <cstdlib>
+#include <iostream>
+#include "Process.h"
 
 using namespace std;
 
-/*
- * 
- */
 int main(int argc, char** argv) {
+    
+    //check for the proper number of arguments
+    if (argc != 2) {
+        std::cerr << "Usage: Lab4 file" << std::endl;
+        
+        return 1;
+    }
+    
+    //create the object and run exec on the file with given commands
+    Process p(argv[1]);
+    p.Exec();
 
     return 0;
 }
