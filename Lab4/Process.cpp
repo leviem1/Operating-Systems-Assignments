@@ -165,13 +165,13 @@ void Process::set(int address, std::vector<std::uint8_t> &v){
     //then assign the values
     for(int offset = 0; offset < v.size() - 1; offset++){
         mem::Addr addr = address + offset;
-        int val = v.at(offset);
+        std::uint8_t val = v.at(offset);
         //add to the memory
         mem->movb(addr, &val);
     }
 }
 
-void Process::fill(int address, int value, int count) {
+void Process::fill(int address, std::uint8_t value, int count) {
     //fill the vector of memory from the front with a value count times
     for (int i = 0; i < count; i++) {
         mem::Addr addr = address + i;
@@ -182,7 +182,7 @@ void Process::fill(int address, int value, int count) {
 void Process::dup(int src_address, int dest_address, int count) {
     //find the value at the address and copy it to the new one, use i as offset
     for (int i = 0; i < count; i++) {
-        int val;
+        std::uint8_t val;
         mem::Addr curr_src = src_address +  i;
         mem::Addr curr_dest = dest_address +  i;
         mem->movb(&val, curr_src);
