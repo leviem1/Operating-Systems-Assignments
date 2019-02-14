@@ -75,10 +75,11 @@ void Process::Exec(){
             
             //collect all the values that we need to set into a vector
             while(s){
-                s >> std::hex >> value;
-                v.push_back(value);
+                if (s >> std::hex >> value) {
+                    v.push_back(value);
+                }
             }
-                       
+                                   
             set(memAddress, v);
         }
         
@@ -125,10 +126,9 @@ void Process::memsize(int address){
 
     //initialize and fill vector with zeros
     mem = new mem::MMU(result);
-    int val = 0;
+    std::uint8_t val = 0;
     
     for (int i = 0; i < address; i++) {
-        int val = 0;
         mem::Addr addr = i;
         //store one address at a time
         mem->movb(addr, &val);
@@ -163,7 +163,7 @@ void Process::cmp(int address1, int address2, int count) {
 void Process::set(int address, std::vector<std::uint8_t> &v){
     //keep track of how far away we are as an offset
     //then assign the values
-    for(int offset = 0; offset < v.size() - 1; offset++){
+    for(int offset = 0; offset < v.size(); offset++){
         mem::Addr addr = address + offset;
         std::uint8_t val = v.at(offset);
         //add to the memory
@@ -206,7 +206,7 @@ void Process::print(int address, int count){
          //print it accounting for total changes
          for(int j = 0; (placeHolderRow < 16 && j < count ); j ++){
              mem::Addr addr = address + placeHolderTotal + j;
-             uint8_t val;
+             std::uint8_t val;
              //specifically get one thing at a time to cast to int to print
              mem->movb(&val, addr, 1);
 
