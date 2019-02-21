@@ -56,13 +56,13 @@ LDLIBSOPTIONS=../memorysubsystemw2019/dist/Release/GNU-Linux/libmemorysubsystemw
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/assignment2
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/program2
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/assignment2: ../memorysubsystemw2019/dist/Release/GNU-Linux/libmemorysubsystemw2019.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/program2: ../memorysubsystemw2019/dist/Release/GNU-Linux/libmemorysubsystemw2019.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/assignment2: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/program2: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/assignment2 ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/program2 ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
