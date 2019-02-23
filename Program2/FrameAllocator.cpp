@@ -9,40 +9,42 @@
 
 using namespace std;
     
-FrameAllocator::FrameAllocator(int frameNumber) {
-    //Initialize "system memory" and fill with zeros
-    //0x4000 = 16KB - constant given page frame size
-    mem.resize(frameNumber * 0x4000, 0);
+FrameAllocator::FrameAllocator(int frameNumber, mem::MMU &m) {
+    
+    mem = &m;
+    
+    int totalMem = mem->get_frame_count() * 0x4000;
+   
     
     //Create links by storing address of next free frame in first 32-bits
-    for (uint32_t i = 0x4000; i < mem.size(); i += 0x4000) {
+    for (uint32_t i = 0x4000; i < totalMem; i += 0x4000) {
         uint32_t next;
         
         //Last value must be 0xFFFFFFFF
-        if (i == mem.size() - 0x4000) {
+        if (i == totalMem - 0x4000) {
             next = 0xFFFFFFFF;
-            memcpy(&mem.at(i), &next, sizeof(next));
+            mem->movb(i, &next, sizeof(next));
         }
         
         //Set value to address of next free frame
         else {
             next = i + 0x4000;
-            memcpy(&mem.at(i), &next, sizeof(next));  
+            mem->movb(i, &next, sizeof(next));  
         }
     }
     
     //Initialize memory allocator variables (stored directly in mem)
     //Total number of frames in mem
     uint32_t total = frameNumber;
-    memcpy(&mem.at(PAGE_FRAMES_TOTAL), &total, sizeof(total));
+    mem->movb(PAGE_FRAMES_TOTAL, &total, sizeof(total));
     
     //Number of frames already allocated
     uint32_t available = frameNumber - 1;
-    memcpy(&mem.at(PAGE_FRAMES_AVAILABLE), &available, sizeof(available));
+    mem->movb(PAGE_FRAMES_AVAILABLE, &available, sizeof(available));
     
     //Address of first available frame
     uint32_t headAddr = 0x4000;
-    memcpy(&mem.at(AVAILABLE_LIST_HEAD), &headAddr, sizeof(headAddr));
+    mem->movb(AVAILABLE_LIST_HEAD, &headAddr, sizeof(headAddr));
 }
 
 bool FrameAllocator::Allocate(uint32_t count, vector<uint32_t> &page_frames) {
@@ -50,7 +52,7 @@ bool FrameAllocator::Allocate(uint32_t count, vector<uint32_t> &page_frames) {
     
     //Get original head addr
     uint32_t headAddr;
-    memcpy(&headAddr, &mem.at(AVAILABLE_LIST_HEAD), sizeof(headAddr));
+    mem->movb(&headAddr, AVAILABLE_LIST_HEAD, sizeof(headAddr));
     
     //Move addr to allocated vector and get next addr
     for (int i = 0; i < count; i++) {
@@ -60,7 +62,7 @@ bool FrameAllocator::Allocate(uint32_t count, vector<uint32_t> &page_frames) {
         page_frames.push_back(headAddr);
         
         //Store next addr in temp variable
-        memcpy(&next, &mem.at(headAddr), sizeof(next));
+        mem->movb(&next, headAddr, sizeof(next));
         
         //Zero previous data
         for (uint32_t j = headAddr; j < headAddr + 4; j++) {
@@ -73,11 +75,11 @@ bool FrameAllocator::Allocate(uint32_t count, vector<uint32_t> &page_frames) {
     }
     
     //Update head pointer
-    memcpy(&mem.at(AVAILABLE_LIST_HEAD), &headAddr, sizeof(headAddr));
+    mem->movb(AVAILABLE_LIST_HEAD, &headAddr, sizeof(headAddr));
     
     //Update pages available
     uint32_t available = get_available() - count;
-    memcpy(&mem.at(PAGE_FRAMES_AVAILABLE), &available, sizeof(available));
+    mem->movb(PAGE_FRAMES_AVAILABLE, &available, sizeof(available));
     
     return true;
 }
@@ -87,7 +89,7 @@ bool FrameAllocator::Release(uint32_t count, vector<uint32_t>& page_frames) {
 
     //Get original head addr
     uint32_t headAddr;
-    memcpy(&headAddr, &mem.at(AVAILABLE_LIST_HEAD), sizeof(headAddr));
+    mem->movb(&headAddr, AVAILABLE_LIST_HEAD, sizeof(headAddr));
     
     //Remove addr from unallocated list and update head
     for (int i = 0; i < count; i++) {
@@ -96,32 +98,32 @@ bool FrameAllocator::Release(uint32_t count, vector<uint32_t>& page_frames) {
         page_frames.pop_back();
         
         //Store last head addr in current head
-        memcpy(&mem.at(newHead), &headAddr, sizeof(headAddr));
+        mem->movb(newHead, &headAddr, sizeof(headAddr));
         
         //Update headAddr to current head
         headAddr = newHead;
     }
 
     //Update head pointer
-    memcpy(&mem.at(AVAILABLE_LIST_HEAD), &headAddr, sizeof(headAddr));
+    mem->movb(AVAILABLE_LIST_HEAD, &headAddr, sizeof(headAddr));
     
     //Update pages available
     uint32_t available = get_available() + count;
-    memcpy(&mem.at(PAGE_FRAMES_AVAILABLE), &available, sizeof(available));
+    mem->movb(PAGE_FRAMES_AVAILABLE, &available, sizeof(available));
     
     return true;
 }
 
 uint32_t FrameAllocator::get_available() const {
     uint32_t available;
-    memcpy(&available, &mem.at(PAGE_FRAMES_AVAILABLE), sizeof(available));
+    mem->movb(&available, PAGE_FRAMES_AVAILABLE, sizeof(available));
     
     return available;
 }
 
 string FrameAllocator::get_available_list_string() const {
     uint32_t addr;
-    memcpy(&addr, &mem.at(AVAILABLE_LIST_HEAD), sizeof(addr));
+    mem->movb(&addr, AVAILABLE_LIST_HEAD, sizeof(addr));
     
     return build_string(addr);
 }
@@ -132,7 +134,7 @@ string FrameAllocator::build_string(uint32_t addr) const {
     //If current addr is not 0xFFFFFFFF, then we can recurse
     if (addr != 0xFFFFFFFF) {
         uint32_t next;
-        memcpy(&next, &mem.at(addr), sizeof(next));
+        mem->movb(&next, addr, sizeof(next));
         
         ostring << " " << hex << addr <<build_string(next);
     }

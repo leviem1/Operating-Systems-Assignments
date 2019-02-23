@@ -20,7 +20,7 @@ public:
     /* Constructor for Frame Allocator
      * @param frameNumber - from file line 1, number of frames
      */
-    FrameAllocator(int frameNumber);
+    FrameAllocator(int frameNumber, mem::MMU &m);
     
     /* Allocate - allocates spaces in memory - sets allocated bytes to 0
      * @param count - the number of available page frames to allocate
@@ -62,7 +62,7 @@ public:
     
 private:
     //vector to store memory
-    mem::MMU *mem;
+    mem::MMU *mem = nullptr;
     
     //Pointer to PAGE_FRAMES_TOTAL value
     const static std::uint16_t PAGE_FRAMES_TOTAL = 0;
