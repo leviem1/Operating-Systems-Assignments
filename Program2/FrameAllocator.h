@@ -64,6 +64,8 @@ private:
     //vector to store memory
     mem::MMU *mem = nullptr;
     
+    const int totalMem = mem->get_frame_count() * 0x4000;
+    
     //Pointer to PAGE_FRAMES_TOTAL value
     const static std::uint16_t PAGE_FRAMES_TOTAL = 0;
     
