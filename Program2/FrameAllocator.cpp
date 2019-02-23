@@ -63,7 +63,10 @@ bool FrameAllocator::Allocate(uint32_t count, vector<uint32_t> &page_frames) {
         memcpy(&next, &mem.at(headAddr), sizeof(next));
         
         //Zero previous data
-        fill(mem.begin() + headAddr, mem.begin() + headAddr + 4, 0);
+        for (uint32_t j = headAddr; j < headAddr + 4; j++) {
+            uint8_t val = 0;
+            mem->movb(j, &val);
+        }
         
         //Update headAddr to next addr
         headAddr = next;
