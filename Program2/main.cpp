@@ -25,7 +25,7 @@ using namespace std;
 int main(int argc, char** argv) {
     
     //create the MMU that will be passed around to all things throughout
-    mem::MMU *mem = new mem::MMU(128);
+    mem::MMU mem (128);
     
     //check for the proper number of args
     if (argc != 2) {
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
         s >> hex >> frameNumber;
         
         //build the frame allocator 
-        FrameAllocator f(frameNumber);
+        FrameAllocator f(frameNumber, mem);
         
         //vector of vectors that store all the processes
         std::vector<std::vector<uint32_t>> processes(4);
