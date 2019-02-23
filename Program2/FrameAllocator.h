@@ -8,6 +8,8 @@
 #ifndef FRAMEALLOCATOR_H
 #define FRAMEALLOCATOR_H
 
+#include <MMU.h>
+
 #include <vector>
 #include <iostream>
 #include <cstring>
@@ -60,7 +62,7 @@ public:
     
 private:
     //vector to store memory
-    std::vector<std::uint8_t> mem;
+    mem::MMU *mem;
     
     //Pointer to PAGE_FRAMES_TOTAL value
     const static std::uint16_t PAGE_FRAMES_TOTAL = 0;
