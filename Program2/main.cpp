@@ -26,10 +26,11 @@ int main(int argc, char** argv) {
     
     //create the MMU that will be passed around to all things throughout
     mem::MMU mem (128);
+    FrameAllocator allocator (128, mem);
     
     //check for the proper number of args
     if (argc != 2) {
-        cerr << "Usage: Lab3 file" << endl;
+        cerr << "Usage: Program2 file" << endl;
         
         return 1;
     }
@@ -45,85 +46,36 @@ int main(int argc, char** argv) {
     
     //process the file
     else {
-        //read the first value in the file, store it, and print it
-        string readLine = "";
-        getline(myFile, readLine);
-        cout << "|" << readLine << "\n";
-        istringstream s(readLine); 
-        int frameNumber; 
-        s >> hex >> frameNumber;
+
+//---------------Build the kernel page table and add to memory--------------//
         
-        //build the frame allocator 
-        FrameAllocator f(frameNumber, mem);
+        mem::PageTable kernel_page_table;  // local copy of page table to build, initialized to 0
+        mem::Addr num_pages = mem.get_frame_count();  // size of physical memory
         
-        //vector of vectors that store all the processes
-        std::vector<std::vector<uint32_t>> processes(4);
-        
-        //variables needed to process the file
-        readLine = "";
-        bool success = false;
-        
-        //cycle through and print each line and do the required commands
-        while (getline(myFile, readLine)){
-            //prints out the line number and the command being read
-            cout << "|" << readLine << "\n";
-            
-            //set up a way to read in the values for each line not
-            //not related to the one before
-            istringstream s1(readLine); 
-            uint32_t processNumber; 
-            uint32_t pageFrameCount;
-            string command;
-            
-            //get the command we need to parse
-            s1 >> command;
-            
-            //Allocate command
-            if(command == "A"){
-                //store the needed values
-                s1 >> hex >> processNumber;
-                s1 >> hex >> pageFrameCount;
-                success = f.Allocate(pageFrameCount, 
-                        processes.at(processNumber));
-                //print correct format based on the result of Allocate
-                if(success){
-                    std::cout << " T " << std::hex << f.get_available() << "\n";
-                } 
-                
-                else {
-                    std::cout << " F " << std::hex << f.get_available() << "\n"; 
-                }
-            }
-            
-            //Release command
-            else if(command == "R"){
-                //store the needed values
-                s1 >> hex >> processNumber;
-                s1 >> hex >> pageFrameCount;
-                success = f.Release(pageFrameCount, 
-                        processes.at(processNumber));
-                //print with format based on result of Release
-                if(success){
-                    std::cout << " T " << std::hex << f.get_available() << "\n";
-                } 
-                
-                else {
-                    std::cout << " F " << std::hex << f.get_available() << "\n"; 
-                }
-            }
-            
-            //print command
-            else if(command == "P"){
-                std::cout << f.get_available_list_string() << "\n";  
-            }
-            
-            //catch all error if we find something weird
-            else {
-                throw runtime_error{ "Error: unknown command found: " + command };
-            }   
+        //use the allocator the allocate kernel
+        //TODO:Figure out what to give it for the vector of 32 int's 
+    
+        // Build page table entries
+        for (mem::Addr i = 0; i < num_pages; ++i) {
+            kernel_page_table.at(i) = 
+            (i << mem::kPageSizeBits) | mem::kPTE_PresentMask 
+                    | mem::kPTE_WritableMask;
         }
+    
+        // Write page table to start of physical memory
+        mem.movb(0, &kernel_page_table, mem::kPageTableSizeBytes);
         
-        //close the file now that we have read through the whole thing
+        //build the pmcb needed to pass the kernel table
+        mem::PMCB kernel_pmcb(0);
+        
+//----------------------Enter Virtual Mode------------------------------//
+        mem.enter_virtual_mode(kernel_pmcb);
+        
+        
+        
+        
+        
+//------------------------Close the file-------------------------------//
         myFile.close();
     } 
     
