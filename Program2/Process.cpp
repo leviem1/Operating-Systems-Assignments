@@ -54,8 +54,11 @@ void Process::Exec(){
         
         //determine which command to execute
         //memsize command
-        if (word == "memsize"){
-            memsize(memAddress);
+        if (word == "alloc"){
+            int pages;
+            s >> std::hex >> pages;
+
+            alloc(memAddress, pages);
         } 
 
         //cmp command
@@ -114,25 +117,8 @@ void Process::Exec(){
     }
 }
 
-void Process::memsize(int address){
-    //check that it follows program constraints
-    if (address > 4000000){
-        throw std::runtime_error{ "Error: memsize command address "
-                "size is too large"};
-    }
+void Process::alloc(int address, int pages) {
 
-    int result = std::ceil((double) address / (double) mem::kPageSize);
-    
-
-    //initialize and fill vector with zeros
-    mem = new mem::MMU(result);
-    std::uint8_t val = 0;
-    
-    for (int i = 0; i < address; i++) {
-        mem::Addr addr = i;
-        //store one address at a time
-        mem->movb(addr, &val);
-    }
 }
 
 void Process::cmp(int address1, int address2, int count) {
