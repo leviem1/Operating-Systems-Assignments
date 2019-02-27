@@ -38,7 +38,8 @@ Process::~Process() {
 }
 
 void Process::Exec(){
-    //TODO: Set MMU to user mode using PMCB
+    //May be safe to assume we don't need to switch to user mode immediately
+    //since the first line will do alloc, which does just that.
 
     //extracts the lines from the file one at a time and performs commands
     std::string readLine = "";
@@ -117,6 +118,16 @@ void Process::Exec(){
             print(memAddress, count);
         }
 
+        //perm command
+        else if (word == "perm") {
+            int count;
+            bool status;
+            s >> std::hex >> count;
+            s >> status;
+
+            perm(memAddress, count, status);
+        }
+
         //increments the counter for line. Leave at the end
         line++;
     }
@@ -125,11 +136,12 @@ void Process::Exec(){
 void Process::alloc(int address, int pages) {
     if (!vm_pmcb) {
         vm_pmcb = new mem::PMCB(ptm->buildUserPageTable(address));
+        //TODO: Setup fault handlers
     }
 
-    //TODO: Switch to kernel mode before allocating
+    mem->set_kernel_PMCB();
     ptm->allocate(pages, vm_pmcb);
-    //TODO: Switch back to user mode
+    mem->set_user_PMCB(*vm_pmcb);
 }
 
 void Process::cmp(int address1, int address2, int count) {
@@ -185,6 +197,12 @@ void Process::dup(int src_address, int dest_address, int count) {
         mem->movb(&val, curr_src);
         mem->movb(curr_dest, &val);
     }
+}
+
+void Process::perm(int address, int pages, bool status) {
+    mem->set_kernel_PMCB();
+    //TODO: Implement this
+    mem->set_user_PMCB(*vm_pmcb);
 }
 
 void Process::print(int address, int count){

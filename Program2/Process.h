@@ -91,6 +91,8 @@ private:
      * @return - void
      */
     void print(int address, int count);
+
+    void perm(int address, int pages, bool status);
 };
 
 #endif /* PROCESS_H */
