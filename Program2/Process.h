@@ -46,11 +46,8 @@ private:
     std::uint64_t line;
     mem::MMU *mem;
 
-    /* memsize - addresses behavior when encountering command memsize
-     * @param address - refers to the size of address space to set vector
-     * @return void
-     */
-    void memsize(int address);
+    //TODO: add docs
+    void alloc(int address, int pages);
 
     /*cmp - compares a number of bytes at two given addresses
      * @param address1 - first address in comparison

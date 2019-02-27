@@ -53,7 +53,9 @@ int main(int argc, char** argv) {
         mem::Addr num_pages = mem.get_frame_count();  // size of physical memory
         
         //use the allocator the allocate kernel
-        //TODO:Figure out what to give it for the vector of 32 int's 
+        //TODO:Figure out what to give it for the vector of 32 int's
+        //Processes should keep track of their allocated mem in page tables or something,
+        //need to pass it something that it can do that with
     
         // Build page table entries
         for (mem::Addr i = 0; i < num_pages; ++i) {
