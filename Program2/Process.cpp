@@ -8,7 +8,10 @@
 #include "Process.h"
 
 
-Process::Process(const std::string &filename) {
+Process::Process(const std::string &filename, mem::MMU &mem, PageTableManager &ptm) {
+    this->mem = &mem;
+    this->ptm = &ptm;
+
     //open the file with proper errors
     file = new std::fstream();
     
@@ -20,21 +23,23 @@ Process::Process(const std::string &filename) {
     
     //initialize member variables
     line = 1;
- }
+}
 
 Process::~Process() {
     if (file && file->is_open()) {
         file->close();
     }
 
-    delete mem;
     delete file;
+    delete vm_pmcb;
     
     file = nullptr;
-    mem = nullptr;
+    vm_pmcb = nullptr;
 }
 
 void Process::Exec(){
+    //TODO: Set MMU to user mode using PMCB
+
     //extracts the lines from the file one at a time and performs commands
     std::string readLine = "";
         
@@ -53,7 +58,7 @@ void Process::Exec(){
         s >> word;
         
         //determine which command to execute
-        //memsize command
+        //alloc command
         if (word == "alloc"){
             int pages;
             s >> std::hex >> pages;
@@ -118,7 +123,13 @@ void Process::Exec(){
 }
 
 void Process::alloc(int address, int pages) {
+    if (!vm_pmcb) {
+        vm_pmcb = new mem::PMCB(ptm->buildUserPageTable(address));
+    }
 
+    //TODO: Switch to kernel mode before allocating
+    ptm->allocate(pages, vm_pmcb);
+    //TODO: Switch back to user mode
 }
 
 void Process::cmp(int address1, int address2, int count) {
@@ -135,7 +146,7 @@ void Process::cmp(int address1, int address2, int count) {
         
         //if mismatch found, print information
         if (valA != valB) {
-            std::cerr << "cmp error, addr1 = " << std::setfill('0')
+            std::cout << "cmp error, addr1 = " << std::setfill('0')
                     << std::setw(7) << std::hex << addressA << ", value = "
                     << std::setfill('0') << std::setw(2) << std::hex
                     << (std::uint32_t) valA << ", addr2 = " << std::setfill('0')

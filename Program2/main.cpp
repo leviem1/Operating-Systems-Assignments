@@ -18,6 +18,7 @@
 #include "Process.h"
 
 using namespace std;
+using namespace mem;
 
 /*
  * 
@@ -27,7 +28,8 @@ int main(int argc, char** argv) {
     //create the MMU that will be passed around to all things throughout
     mem::MMU mem (128);
     FrameAllocator allocator (128, mem);
-    
+    PageTableManager ptm(mem, allocator);
+
     //check for the proper number of args
     if (argc != 2) {
         cerr << "Usage: Program2 file" << endl;
@@ -64,16 +66,36 @@ int main(int argc, char** argv) {
         }
     
         // Write page table to start of physical memory
-        mem.movb(0, &kernel_page_table, mem::kPageTableSizeBytes);
+        mem.movb(address[0], &kernel_page_table, mem::kPageTableSizeBytes);
         
         //build the pmcb needed to pass the kernel table
-        mem::PMCB kernel_pmcb(0);
+        mem::PMCB kernel_pmcb(address[0]);
         
 //----------------------Enter Virtual Mode------------------------------//
         mem.enter_virtual_mode(kernel_pmcb);
-        
-        
-        
+
+        /*
+        vector<mem::Addr> address;
+        allocator.Allocate(1,address);
+        // Build user mode page table and write to memory
+        PageTable page_table;
+        Addr pt_offset = kPageSizeBits & kPageTableIndexMask;
+        page_table.at(pt_offset) = address[0] | kPTE_PresentMask | kPTE_WritableMask;
+        mem.movb(address[0], &page_table, kPageTableSizeBytes);
+
+        // Switch to user mode page table
+        PMCB vm_pmcb(address[0]); // load to start virtual mode
+        mem.set_user_PMCB(vm_pmcb);
+
+        Addr a = 0;
+        uint8_t val = 123;
+
+        cout << mem.movb(a, &val) << "\n";
+
+        mem.movb(&val, a);
+
+        cout << val << endl;
+        */
         
         
 //------------------------Close the file-------------------------------//

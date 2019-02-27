@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cmath>
 #include <MMU.h>
+#include "PageTableManager.h"
 
 class Process {
 public:
@@ -25,7 +26,7 @@ public:
      * @param filename - name of the file we are reading from
      * @throws run time error if the file cannot be opened
      */
-    Process(const std::string &filename);
+    Process(const std::string &filename, mem::MMU &mem, PageTableManager &ptm);
 
     //Process Destructor that closes the file and deals with memory leaks
     ~Process();
@@ -45,6 +46,8 @@ private:
     std::fstream *file;
     std::uint64_t line;
     mem::MMU *mem;
+    PageTableManager *ptm;
+    mem::PMCB *vm_pmcb;
 
     //TODO: add docs
     void alloc(int address, int pages);

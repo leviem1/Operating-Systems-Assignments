@@ -9,19 +9,26 @@
 #ifndef PAGETABLEMANAGER_H
 #define PAGETABLEMANAGER_H
 
+#include <MMU.h>
+#include "FrameAllocator.h"
+
 class PageTableManager {
 public:
     
-    PageTableManager();
+    PageTableManager(mem::MMU &mem, FrameAllocator &fa);
   
     PageTableManager(const PageTableManager &other) = delete;  // no copy constructor
     PageTableManager(PageTableManager &&other) = delete;       // no move constructor
     PageTableManager operator=(const PageTableManager &other) = delete;  // no copy assign
     PageTableManager operator=(PageTableManager &&other) = delete;       // no move assign
+
+    mem::Addr buildUserPageTable(int vaddr);
+    bool allocate(std::uint32_t count, mem::PMCB *pmcb);
    
     ~PageTableManager();
 private:
-
+    mem::MMU *mem;
+    FrameAllocator *fa;
 };
 
 #endif /* PAGETABLEMANAGER_H */
