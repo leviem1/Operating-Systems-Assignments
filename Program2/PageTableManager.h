@@ -23,7 +23,7 @@ public:
     PageTableManager operator=(PageTableManager &&other) = delete;       // no move assign
 
     mem::Addr buildUserPageTable(int vaddr);
-    bool allocate(std::uint32_t count, mem::PMCB *pmcb);
+    bool allocate(std::uint32_t count, mem::PMCB *pmcb, int vaddr);
    
     ~PageTableManager();
 private:

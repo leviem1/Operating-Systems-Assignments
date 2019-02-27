@@ -140,7 +140,7 @@ void Process::alloc(int address, int pages) {
     }
 
     mem->set_kernel_PMCB();
-    ptm->allocate(pages, vm_pmcb);
+    ptm->allocate(pages, vm_pmcb, address);
     mem->set_user_PMCB(*vm_pmcb);
 }
 

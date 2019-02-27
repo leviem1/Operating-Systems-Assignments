@@ -71,31 +71,12 @@ int main(int argc, char** argv) {
         //build the pmcb needed to pass the kernel table
         mem::PMCB kernel_pmcb(address[0]);
         
-//----------------------Enter Virtual Mode------------------------------//
+//----------------------Enter Virtual Mode/Execute File-----------------//
         mem.enter_virtual_mode(kernel_pmcb);
 
-        /*
-        vector<mem::Addr> address;
-        allocator.Allocate(1,address);
-        // Build user mode page table and write to memory
-        PageTable page_table;
-        Addr pt_offset = kPageSizeBits & kPageTableIndexMask;
-        page_table.at(pt_offset) = address[0] | kPTE_PresentMask | kPTE_WritableMask;
-        mem.movb(address[0], &page_table, kPageTableSizeBytes);
-
-        // Switch to user mode page table
-        PMCB vm_pmcb(address[0]); // load to start virtual mode
-        mem.set_user_PMCB(vm_pmcb);
-
-        Addr a = 0;
-        uint8_t val = 123;
-
-        cout << mem.movb(a, &val) << "\n";
-
-        mem.movb(&val, a);
-
-        cout << val << endl;
-        */
+        
+        Process p(argv[1], mem, ptm);
+        p.Exec();
         
         
 //------------------------Close the file-------------------------------//
