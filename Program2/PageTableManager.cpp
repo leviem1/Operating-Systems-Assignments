@@ -43,14 +43,14 @@ bool PageTableManager::allocate(std::uint32_t count, mem::PMCB *pmcb, int vaddr)
         //shift to get the page # and multiply by the size
         std::uint32_t offset = (currentAddr >> 14) * 4;
         
-        //calculate the destination physical address
+        //calculate the destination virtual address
         std::uint32_t destVirtualAddr = offset + pmcb->page_table_base;
         
         //or the current address with the present and writeable bits
         std::uint32_t presAndwrit = page_frames.at(i) | mem::kPTE_PresentMask | mem::kPTE_WritableMask;
         
         //put the physical adress stuff into the page table
-        mem->movb(destVirtualAddr, &presAndwrit);    
+        mem->movb(destVirtualAddr, &presAndwrit, sizeof(presAndwrit));
     }
 
     return didAlloc;
