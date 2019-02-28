@@ -201,7 +201,7 @@ void Process::dup(int src_address, int dest_address, int count) {
 
 void Process::perm(int address, int pages, bool status) {
     mem->set_kernel_PMCB();
-    //TODO: Implement this
+    ptm->setWritable(vm_pmcb, address, pages, status);
     mem->set_user_PMCB(*vm_pmcb);
 }
 

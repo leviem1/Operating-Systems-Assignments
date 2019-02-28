@@ -6,7 +6,6 @@
  * Created on February 18, 2019, 1:14 PM
  */
 
-#include <cstdlib>
 #include <MMU.h>
 #include <iostream>
 #include <fstream>
@@ -24,7 +23,6 @@ using namespace mem;
  * 
  */
 int main(int argc, char** argv) {
-    
     //create the MMU that will be passed around to all things throughout
     mem::MMU mem (128);
     FrameAllocator allocator (128, mem);

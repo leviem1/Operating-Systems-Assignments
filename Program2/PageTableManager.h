@@ -23,9 +23,10 @@ public:
     PageTableManager operator=(PageTableManager &&other) = delete;       // no move assign
 
     mem::Addr buildUserPageTable(int vaddr);
-    bool allocate(std::uint32_t count, mem::PMCB *pmcb, int vaddr);
+    bool allocate(std::uint32_t count, mem::PMCB *pmcb, std::uint32_t vaddr);
+    void setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status);
    
-    ~PageTableManager();
+    ~PageTableManager() = default;
 private:
     mem::MMU *mem;
     FrameAllocator *fa;

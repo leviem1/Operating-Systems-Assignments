@@ -141,6 +141,3 @@ string FrameAllocator::build_string(uint32_t addr) const {
     
     return ostring.str();
 }
-
-FrameAllocator::~FrameAllocator() {
-}

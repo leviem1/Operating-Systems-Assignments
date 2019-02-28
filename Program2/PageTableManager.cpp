@@ -11,9 +11,6 @@
 
 using namespace mem;
 
-PageTableManager::~PageTableManager() {
-}
-
 PageTableManager::PageTableManager(MMU &mem, FrameAllocator &fa) {
     this->mem = &mem;
     this->fa = &fa;
@@ -31,28 +28,49 @@ Addr PageTableManager::buildUserPageTable(int vaddress) {
     return address[0];
 }
 
-bool PageTableManager::allocate(std::uint32_t count, mem::PMCB *pmcb, int vaddr) {
+bool PageTableManager::allocate(std::uint32_t count, mem::PMCB *pmcb, uint32_t vaddr) {
     std::vector<uint32_t> page_frames;
     bool didAlloc = fa->Allocate(count, page_frames);
 
-    //TODO: Map values retrieved from alloc to page table
-    for(int i = 0; i < page_frames.size(); i++){ 
+    for(int i = 0; i < page_frames.size(); i++){
         //calculate the offset that we need to add to the vaddr in the user page table
         std::uint32_t currentAddr = vaddr + (i * mem::kPageSize);
         
         //shift to get the page # and multiply by the size
         std::uint32_t offset = (currentAddr >> 14) * 4;
         
-        //calculate the destination virtual address
-        std::uint32_t destVirtualAddr = offset + pmcb->page_table_base;
+        //calculate the destination address
+        std::uint32_t destAddr = offset + pmcb->page_table_base;
         
         //or the current address with the present and writeable bits
         std::uint32_t presAndwrit = page_frames.at(i) | mem::kPTE_PresentMask | mem::kPTE_WritableMask;
         
-        //put the physical adress stuff into the page table
-        mem->movb(destVirtualAddr, &presAndwrit, sizeof(presAndwrit));
+        //put the physical address stuff into the page table
+        mem->movb(destAddr, &presAndwrit, sizeof(presAndwrit));
     }
 
     return didAlloc;
+}
+
+void PageTableManager::setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status) {
+    for (int i = 0; i < count; i++) {
+        //calculate the offset that we need to add to the vaddr in the user page table
+        std::uint32_t currentAddr = vaddr + (i * mem::kPageSize);
+
+        //shift to get the page # and multiply by the size
+        std::uint32_t offset = (currentAddr >> 14) * 4;
+
+        //calculate the destination address
+        std::uint32_t destAddr = offset + pmcb->page_table_base;
+
+        //Pull out present bit
+        std::uint32_t presentBit = (currentAddr & kPTE_PresentMask) >> 1;
+
+        if (presentBit == 1) {
+            currentAddr ^= (-status ^ currentAddr) & 1UL;
+
+            mem->movb(destAddr, &currentAddr, sizeof(currentAddr));
+        }
+    }
 }
 

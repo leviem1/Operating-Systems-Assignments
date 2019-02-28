@@ -52,7 +52,7 @@ public:
     /**
      * empty destructor defined for frame allocator
      */
-    ~FrameAllocator();
+    ~FrameAllocator() = default;
     
     //explicit rule of five deletes
     FrameAllocator(const FrameAllocator& other) = delete;
