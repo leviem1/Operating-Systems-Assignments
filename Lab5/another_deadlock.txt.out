@@ -1,0 +1,12 @@
+3 processes, 4 resources
+Available:
+	  0  0  0  1
+Allocation:
+	  0  1  0  0
+	  1  1  0  3
+	  0  0  1  0
+Request:
+	  0  0  0  0
+	  0  0  1  0
+	  0  1  0  2
+Deadlocked processes: 1 2
