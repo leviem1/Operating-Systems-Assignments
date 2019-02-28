@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
     //create the MMU that will be passed around to all things throughout
     mem::MMU mem (128);
     
+    //build the connections to the fault handlers
     std::shared_ptr<WriteFaultHandler> wpf_handler(
           std::make_shared<WriteFaultHandler>());
     mem.SetWritePermissionFaultHandler(wpf_handler);

@@ -15,18 +15,51 @@
 class PageTableManager {
 public:
     
+    /**
+     * PTM constructor
+     * @param mem - the one MMU instance for whole trace
+     * @param fa - the frame allocator that needs to be maintained for the 
+     * whole trace
+     */
     PageTableManager(mem::MMU &mem, FrameAllocator &fa);
   
+    //explicit deletes
     PageTableManager(const PageTableManager &other) = delete;  // no copy constructor
     PageTableManager(PageTableManager &&other) = delete;       // no move constructor
     PageTableManager operator=(const PageTableManager &other) = delete;  // no copy assign
     PageTableManager operator=(PageTableManager &&other) = delete;       // no move assign
 
+    /**
+     * buildUserPageTable - builds a user page table for the process
+     * @param vaddr - the virtual address we should start at
+     * @return - the place in physical memory where we built the table
+     */
     mem::Addr buildUserPageTable(int vaddr);
+    
+    /**
+     * allocate - calls the frame allocator if needed and then
+     * manipulates the thing in physical memory so it can be 
+     * put in the correct spot in the page table
+     * @param count - the amount of frames to allocate
+     * @param pmcb - the pmcb for the process
+     * @param vaddr - allocate the frames starting at this address
+     * @return - bool of whether the memory was successfully allocated or not
+     */
     bool allocate(std::uint32_t count, mem::PMCB *pmcb, std::uint32_t vaddr);
+    
+    /**
+     * setWritable - sets present entries writable bit to status to adjust
+     * permission levels
+     * @param pmcb - the pmcb for the process involved
+     * @param vaddr - start adjusting permissions at this virtual address
+     * @param count - check this number of entries
+     * @param status - set the writeable bit to this status. if true -> 1 
+     * otherwise -> 0
+     */
     void setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status);
    
     ~PageTableManager() = default;
+    
 private:
     mem::MMU *mem;
     FrameAllocator *fa;

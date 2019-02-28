@@ -49,7 +49,14 @@ private:
     PageTableManager *ptm;
     mem::PMCB *vm_pmcb;
 
-    //TODO: add docs
+    /**
+     * alloc - deals with the allocate command in a trace file.
+     * allocates parts of memory using the frame allocator 
+     * @param address - the starting virtual address to allocate, must be on a
+     * frame border
+     * @param pages - the number of pages to allocate
+     * @returns - void
+     */
     void alloc(int address, int pages);
 
     /*cmp - compares a number of bytes at two given addresses
@@ -92,6 +99,16 @@ private:
      */
     void print(int address, int count);
 
+    /**
+     * Perm - deals with the perm command in a trace file. Will go through pages 
+     * number of pages starting at the virtual address, address and 
+     * set the write bit to whatever status is provided present bit set
+     * @param address - starting virtual address to update write permissions
+     * @param pages - number of pages to check to update write permissions
+     * @param status - what to change the write permission to. True -> 1
+     * False ->0
+     * @return - void
+     */
     void perm(int address, int pages, bool status);
 };
 
