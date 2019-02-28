@@ -153,8 +153,8 @@ void Process::cmp(int address1, int address2, int count) {
         std::uint8_t valA;
         std::uint8_t valB;
         //get from memory version
-        mem->movb(&valA, addressA);
-        mem->movb(&valB, addressB);
+        if(!mem->movb(&valA, addressA)) break;
+        if(!mem->movb(&valB, addressB)) break;
         
         //if mismatch found, print information
         if (valA != valB) {
@@ -176,7 +176,7 @@ void Process::set(int address, std::vector<std::uint8_t> &v){
         mem::Addr addr = address + offset;
         std::uint8_t val = v.at(offset);
         //add to the memory
-        mem->movb(addr, &val);
+        if(!mem->movb(addr, &val)) break;
     }
 }
 
@@ -184,7 +184,7 @@ void Process::fill(int address, std::uint8_t value, int count) {
     //fill the vector of memory from the front with a value count times
     for (int i = 0; i < count; i++) {
         mem::Addr addr = address + i;
-        mem->movb(addr, &value);
+        if(!mem->movb(addr, &value)) break;
     }
 }
 
@@ -194,8 +194,8 @@ void Process::dup(int src_address, int dest_address, int count) {
         std::uint8_t val;
         mem::Addr curr_src = src_address +  i;
         mem::Addr curr_dest = dest_address +  i;
-        mem->movb(&val, curr_src);
-        mem->movb(curr_dest, &val);
+        if(!mem->movb(&val, curr_src)) break;
+        if(!mem->movb(curr_dest, &val)) break;
     }
 }
 
@@ -207,11 +207,32 @@ void Process::perm(int address, int pages, bool status) {
 
 void Process::print(int address, int count){
     
+    for(int i = 0; i < count; i ++){
+        if(i%16 == 0){
+            if(i > 0){
+                std::cout<< '\n';
+            }
+            std::cout << std::setfill('0') << std::setw(7) << std::hex 
+                 << address + i << ":";
+        }
+        
+        mem::Addr addr = address + i;
+        std::uint8_t val;
+        //specifically get one thing at a time to cast to int to print
+        if(!mem->movb(&val, addr, 1)) return;
+
+        std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
+            << (int) val;
+        
+    }
+    
+    std::cout << '\n';
+    /*
     //markers to keep track of where we are
     int placeHolderTotal = 0;
     int placeHolderRow = 0;
     
-    //outer loop keeps track of building the headers and breaks fro new lines
+    //outer loop keeps track of building the headers and breaks from new lines
     for(int i = 0; i < count; i +=16){
         placeHolderRow = 0;
          std::cout << std::setfill('0') << std::setw(7) << std::hex 
@@ -223,7 +244,7 @@ void Process::print(int address, int count){
              mem::Addr addr = address + placeHolderTotal + j;
              std::uint8_t val;
              //specifically get one thing at a time to cast to int to print
-             mem->movb(&val, addr, 1);
+             if(!mem->movb(&val, addr, 1)) break;
 
               std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
                     << (int) val;
@@ -233,5 +254,7 @@ void Process::print(int address, int count){
          //update counter and new line break
          placeHolderTotal += 16;
           std::cout << "\n"; 
-    }   
+    } 
+    
+     */
 }

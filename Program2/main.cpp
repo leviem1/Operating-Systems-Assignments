@@ -15,6 +15,7 @@
 
 #include "FrameAllocator.h"
 #include "Process.h"
+#include "FaultHandler.h"
 
 using namespace std;
 using namespace mem;
@@ -25,6 +26,15 @@ using namespace mem;
 int main(int argc, char** argv) {
     //create the MMU that will be passed around to all things throughout
     mem::MMU mem (128);
+    
+    std::shared_ptr<WriteFaultHandler> wpf_handler(
+          std::make_shared<WriteFaultHandler>());
+    mem.SetWritePermissionFaultHandler(wpf_handler);
+    
+    std::shared_ptr<PageFaultHandler> pf_handler(
+          std::make_shared<PageFaultHandler>());
+    mem.SetPageFaultHandler(pf_handler);
+    
     FrameAllocator allocator (128, mem);
     PageTableManager ptm(mem, allocator);
 

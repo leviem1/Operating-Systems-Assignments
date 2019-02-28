@@ -54,7 +54,7 @@ bool PageTableManager::allocate(std::uint32_t count, mem::PMCB *pmcb, uint32_t v
 
 void PageTableManager::setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status) {
     for (int i = 0; i < count; i++) {
-        //calculate the offset that we need to add to the vaddr in the user page table
+        
         std::uint32_t currentAddr = vaddr + (i * mem::kPageSize);
 
         //shift to get the page # and multiply by the size
@@ -62,14 +62,17 @@ void PageTableManager::setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int cou
 
         //calculate the destination address
         std::uint32_t destAddr = offset + pmcb->page_table_base;
+        
+        std::uint32_t entry;
+        mem->movb(&entry, destAddr, sizeof(entry));
 
         //Pull out present bit
-        std::uint32_t presentBit = (currentAddr & kPTE_PresentMask) >> 1;
+        std::uint32_t presentBit = (entry & kPTE_PresentMask) >> 1;
 
         if (presentBit == 1) {
-            currentAddr ^= (-status ^ currentAddr) & 1UL;
+            entry ^= (-status ^ entry) & 1UL;
 
-            mem->movb(destAddr, &currentAddr, sizeof(currentAddr));
+            mem->movb(destAddr, &entry, sizeof(entry));
         }
     }
 }

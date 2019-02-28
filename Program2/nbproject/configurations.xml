@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>FaultHandler.h</itemPath>
       <itemPath>FrameAllocator.h</itemPath>
       <itemPath>PageTableManager.h</itemPath>
       <itemPath>Process.h</itemPath>
@@ -65,6 +66,8 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="FaultHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="FrameAllocator.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrameAllocator.h" ex="false" tool="3" flavor2="0">
@@ -121,6 +124,8 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="FaultHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="FrameAllocator.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrameAllocator.h" ex="false" tool="3" flavor2="0">
