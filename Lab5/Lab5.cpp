@@ -41,9 +41,14 @@ unsigned numResources;   // actual number of resources
 //          of Available, false otherwise.
 bool IsRequestLessEqual(int i) {
   bool result = true;
-  //
-  // TODO: implement this function
-  //
+  
+  for(int j = 0; j < request[i].size(); j++){
+      if(request[i][j] <= available.at(j)){
+          continue;
+      } else{
+          return false;
+      }
+  }
   cout << "IsRequestLessEqual not implemented yet!\n";
   return result;
 }
