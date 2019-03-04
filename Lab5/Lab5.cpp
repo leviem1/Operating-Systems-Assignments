@@ -66,10 +66,27 @@ void AddToAvailable(int i) {
 // PrintDeadlocks - print indices of deadlocked processes
 //
 void PrintDeadlocks(void) {
-  //
-  // TODO: implement this function
-  //
-  cout << "PrintDeadlocks not implemented yet!\n";
+    bool didChange = true;
+
+    while (didChange) {
+        didChange = false;
+
+        for (int i = 0; i < allocation.size(); i++) {
+            if (!allocation[i].empty() && IsRequestLessEqual(i)) {
+                AddToAvailable(i);
+                allocation[i].clear();
+                didChange = true;
+            }
+        }
+    }
+
+    cout << "Deadlocked Processes:";
+
+    for (int i = 0; i < allocation.size(); i++) {
+        if (!allocation[i].empty()) cout << " " << i;
+    }
+
+    cout << "\n";
 }
 
 // ReadSystemConfig - read the system configuration from the
