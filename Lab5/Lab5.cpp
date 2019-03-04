@@ -68,9 +68,12 @@ void AddToAvailable(int i) {
 void PrintDeadlocks(void) {
     bool didChange = true;
 
+    //check every iteration of the algorithm to make sure something changes
+    //make sure we know when to stop
     while (didChange) {
         didChange = false;
 
+        //run the algorithm using the above methods
         for (int i = 0; i < allocation.size(); i++) {
             if (!allocation[i].empty() && IsRequestLessEqual(i)) {
                 AddToAvailable(i);
@@ -82,6 +85,8 @@ void PrintDeadlocks(void) {
 
     cout << "Deadlocked Processes:";
 
+    //any process not deadlocked at this point will still have resources
+    //print them out
     for (int i = 0; i < allocation.size(); i++) {
         if (!allocation[i].empty()) cout << " " << i;
     }
