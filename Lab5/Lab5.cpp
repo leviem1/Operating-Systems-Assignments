@@ -49,7 +49,7 @@ bool IsRequestLessEqual(int i) {
           return false;
       }
   }
-  cout << "IsRequestLessEqual not implemented yet!\n";
+
   return result;
 }
 
@@ -58,10 +58,9 @@ bool IsRequestLessEqual(int i) {
 //
 // @param i - index of row in Allocation array
 void AddToAvailable(int i) {
-  //
-  // TODO: implement this function
-  //
-  cout << "AddToAvailable not implemented yet!\n";
+    for (int j = 0; j < allocation[i].size(); j++) {
+        available[j] += allocation[i][j];
+    }
 }
 
 // PrintDeadlocks - print indices of deadlocked processes
