@@ -27,21 +27,22 @@ int main(int argc, char** argv) {
     //create the MMU that will be passed around to all things throughout
     mem::MMU mem (128);
     
+    FrameAllocator allocator (128, mem);
+    PageTableManager ptm(mem, allocator);
+    
     //build the connections to the fault handlers
     std::shared_ptr<WriteFaultHandler> wpf_handler(
           std::make_shared<WriteFaultHandler>());
     mem.SetWritePermissionFaultHandler(wpf_handler);
     
     std::shared_ptr<PageFaultHandler> pf_handler(
-          std::make_shared<PageFaultHandler>());
+          std::make_shared<PageFaultHandler>(ptm));
     mem.SetPageFaultHandler(pf_handler);
     
-    FrameAllocator allocator (128, mem);
-    PageTableManager ptm(mem, allocator);
 
     //check for the proper number of args
     if (argc != 2) {
-        cerr << "Usage: Program2 file" << endl;
+        cerr << "Usage: Program3 file" << endl;
         
         return 1;
     }

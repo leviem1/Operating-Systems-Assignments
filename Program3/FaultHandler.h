@@ -12,6 +12,8 @@
 #include <MMU.h>
 #include <iostream>
 
+#include "PageTableManager.h"
+
 //extends the MMU's fault handler to print appropriate messages
 class WriteFaultHandler: public mem::MMU::FaultHandler {
 public:
@@ -40,7 +42,9 @@ public:
 
 class PageFaultHandler: public mem::MMU::FaultHandler {
 public:
-    PageFaultHandler(){}
+    PageFaultHandler(PageTableManager &ptm){
+        this->ptm = &ptm;
+    }
     
     //explicit deletes
     PageFaultHandler(const PageFaultHandler& other) = delete;
@@ -66,9 +70,21 @@ public:
         } 
         //write page fault
         else if (pmcb.operation_state == mem::PMCB::WRITE_OP){
-            std::cout << "Write Page Fault at address " << std::hex
+            //allocation success retry the execution step
+            int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
+            
+            mem::PMCB copy = pmcb;
+            
+            if(ptm->allocate(1, &copy, vaddr)){
+                return true;
+            }
+            //allocation fails, print the fault
+            else {
+                std::cout << "Write Page Fault at address " << std::hex
                     << std::setfill('0') << std::setw(7)
                     << pmcb.next_vaddress << '\n';
+                return false;
+            }
         } 
         
         else {
@@ -77,6 +93,9 @@ public:
         
         return false;
     }
+    
+private:
+    PageTableManager *ptm;
 };
 
 #endif /* FAULTHANDLER_H */

@@ -29,6 +29,7 @@ Addr PageTableManager::buildUserPageTable(int vaddress) {
 }
 
 bool PageTableManager::allocate(std::uint32_t count, mem::PMCB *pmcb, uint32_t vaddr) {
+    mem->set_kernel_PMCB();
     std::vector<uint32_t> page_frames;
     bool didAlloc = fa->Allocate(count, page_frames);
 
@@ -48,6 +49,7 @@ bool PageTableManager::allocate(std::uint32_t count, mem::PMCB *pmcb, uint32_t v
         //put the physical address stuff into the page table
         mem->movb(destAddr, &presAndwrit, sizeof(presAndwrit));
     }
+    mem->set_user_PMCB(*pmcb);
 
     return didAlloc;
 }
