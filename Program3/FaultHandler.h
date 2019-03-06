@@ -42,8 +42,9 @@ public:
 
 class PageFaultHandler: public mem::MMU::FaultHandler {
 public:
-    PageFaultHandler(PageTableManager &ptm){
+    PageFaultHandler(PageTableManager &ptm, mem::MMU &mem){
         this->ptm = &ptm;
+        this->mem = &mem;
     }
     
     //explicit deletes
@@ -72,10 +73,12 @@ public:
         else if (pmcb.operation_state == mem::PMCB::WRITE_OP){
             //allocation success retry the execution step
             int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
-            
-            mem::PMCB copy = pmcb;
-            
-            if(ptm->allocate(1, &copy, vaddr)){
+
+            mem->set_kernel_PMCB();
+            bool didAlloc = ptm->allocate(1, pmcb.page_table_base, vaddr);
+            mem->set_user_PMCB(pmcb);
+
+            if(didAlloc){
                 return true;
             }
             //allocation fails, print the fault
@@ -96,6 +99,7 @@ public:
     
 private:
     PageTableManager *ptm;
+    mem::MMU *mem;
 };
 
 #endif /* FAULTHANDLER_H */

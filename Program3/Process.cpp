@@ -140,9 +140,10 @@ void Process::alloc(int address, int pages) {
     }
     
     //switch to kernel mode, allocate pages, and go back to user mode
-   
-    ptm->allocate(pages, vm_pmcb, address);
-    
+    mem->set_kernel_PMCB();
+    ptm->allocate(pages, vm_pmcb->page_table_base, address);
+    mem->set_user_PMCB(*vm_pmcb);
+
 }
 
 void Process::cmp(int address1, int address2, int count) {

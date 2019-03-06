@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     mem.SetWritePermissionFaultHandler(wpf_handler);
     
     std::shared_ptr<PageFaultHandler> pf_handler(
-          std::make_shared<PageFaultHandler>(ptm));
+          std::make_shared<PageFaultHandler>(ptm, mem));
     mem.SetPageFaultHandler(pf_handler);
     
 

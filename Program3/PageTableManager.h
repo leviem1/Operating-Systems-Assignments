@@ -41,11 +41,11 @@ public:
      * manipulates the thing in physical memory so it can be 
      * put in the correct spot in the page table
      * @param count - the amount of frames to allocate
-     * @param pmcb - the pmcb for the process
+     * @param page_table_base - the base of the page table for the process
      * @param vaddr - allocate the frames starting at this address
      * @return - bool of whether the memory was successfully allocated or not
      */
-    bool allocate(std::uint32_t count, mem::PMCB *pmcb, std::uint32_t vaddr);
+    bool allocate(std::uint32_t count, mem::Addr page_table_base, std::uint32_t vaddr);
     
     /**
      * setWritable - sets present entries writable bit to status to adjust
