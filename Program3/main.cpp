@@ -4,6 +4,13 @@
  * Author: Elisabeth Bristol and Levi Muniz
  *
  * Created on February 18, 2019, 1:14 PM
+ *
+ *  /\\=//\-"""-.
+ * / /6 6\ \     \
+ *  =\_Y_/=  (_  ;{}
+ *    /^//_/-/__/
+ *    "" ""  """
+ *    Team mascot
  */
 
 #include <MMU.h>
