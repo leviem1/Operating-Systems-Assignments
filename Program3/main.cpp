@@ -22,7 +22,6 @@
 
 #include "FrameAllocator.h"
 #include "Process.h"
-#include "FaultHandler.h"
 
 using namespace std;
 using namespace mem;
@@ -36,16 +35,6 @@ int main(int argc, char** argv) {
     
     FrameAllocator allocator (128, mem);
     PageTableManager ptm(mem, allocator);
-    
-    //build the connections to the fault handlers
-    std::shared_ptr<WriteFaultHandler> wpf_handler(
-          std::make_shared<WriteFaultHandler>());
-    mem.SetWritePermissionFaultHandler(wpf_handler);
-    
-    std::shared_ptr<PageFaultHandler> pf_handler(
-          std::make_shared<PageFaultHandler>(ptm, mem));
-    mem.SetPageFaultHandler(pf_handler);
-    
 
     //check for the proper number of args
     if (argc != 2) {

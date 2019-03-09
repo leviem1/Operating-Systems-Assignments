@@ -20,6 +20,56 @@
 #include <MMU.h>
 #include "PageTableManager.h"
 
+class WriteFaultHandler: public mem::MMU::FaultHandler {
+public:
+    WriteFaultHandler() = default;
+
+    //explicit deletes
+    WriteFaultHandler(const WriteFaultHandler& other) = delete;
+    WriteFaultHandler(WriteFaultHandler&& other) = delete;
+    WriteFaultHandler& operator=(const WriteFaultHandler& other) = delete;
+    WriteFaultHandler& operator=(WriteFaultHandler&& other) = delete;
+
+    ~WriteFaultHandler() = default;
+
+    /**
+     * Run - will print out the appropriate error message
+     * @param pmcb  - the process pmcb where the fault was experienced
+     * @return bool- will always return false - used for the errrors
+     */
+    virtual bool Run(const mem::PMCB &pmcb) {
+        std::cout << "Write Permission Fault at address " << std::setfill('0')
+                  << std::setw(7) << std::hex << pmcb.next_vaddress << '\n';
+
+        return false;
+    }
+};
+
+class PageFaultHandler: public mem::MMU::FaultHandler {
+public:
+    PageFaultHandler(PageTableManager &ptm, mem::MMU &mem);
+
+    //explicit deletes
+    PageFaultHandler(const PageFaultHandler& other) = delete;
+    PageFaultHandler(PageFaultHandler&& other) = delete;
+    PageFaultHandler& operator=(const PageFaultHandler& other) = delete;
+    PageFaultHandler& operator=(PageFaultHandler&& other) = delete;
+
+    ~PageFaultHandler() = default;
+
+    /**
+     * run - will print out the appropriate error message for 2 different
+     * kinds of page faults.
+     * @param pmcb - the pmcb of the process where the fault happened
+     * @return
+     */
+    virtual bool Run(const mem::PMCB &pmcb);
+
+private:
+    PageTableManager *ptm;
+    mem::MMU *mem;
+};
+
 class Process {
 public:
     /*Constructor for Process 
@@ -48,6 +98,8 @@ private:
     mem::MMU *mem;
     PageTableManager *ptm;
     mem::PMCB *vm_pmcb;
+    std::shared_ptr<WriteFaultHandler> *wf_handler;
+    std::shared_ptr<PageFaultHandler> *pf_handler;
 
     /**
      * alloc - deals with the allocate command in a trace file.
@@ -111,5 +163,7 @@ private:
      */
     void perm(int address, int pages, bool status);
 };
+
+
 
 #endif /* PROCESS_H */

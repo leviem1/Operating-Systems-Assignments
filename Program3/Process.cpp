@@ -7,10 +7,16 @@
 
 #include "Process.h"
 
-
 Process::Process(const std::string &filename, mem::MMU &mem, PageTableManager &ptm) {
     this->mem = &mem;
     this->ptm = &ptm;
+
+    //build the connections to the fault handlers
+    wf_handler = new std::shared_ptr<WriteFaultHandler>(
+            std::make_shared<WriteFaultHandler>());
+
+    pf_handler = new std::shared_ptr<PageFaultHandler> (
+            std::make_shared<PageFaultHandler>(ptm, mem));
 
     //open the file with proper errors
     file = new std::fstream();
@@ -32,14 +38,20 @@ Process::~Process() {
 
     delete file;
     delete vm_pmcb;
-    
+    delete wf_handler;
+    delete pf_handler;
+
     file = nullptr;
     vm_pmcb = nullptr;
+    wf_handler = nullptr;
+    pf_handler = nullptr;
 }
 
 void Process::Exec(){
-    //May be safe to assume we don't need to switch to user mode immediately
-    //since the first line will do alloc, which does just that.
+    mem->SetWritePermissionFaultHandler(*wf_handler);
+    mem->SetPageFaultHandler(*pf_handler);
+
+
 
     //extracts the lines from the file one at a time and performs commands
     std::string readLine = "";
@@ -131,6 +143,9 @@ void Process::Exec(){
         //increments the counter for line. Leave at the end
         line++;
     }
+
+    //TODO: We will have to generate a list of alloc'd addresses
+    // from the page table, but we don't have to update the page table on dealloc
 }
 
 void Process::alloc(int address, int pages) {
@@ -239,3 +254,45 @@ void Process::print(int address, int count){
     std::cout << '\n';
     
 }
+
+PageFaultHandler::PageFaultHandler(PageTableManager &ptm, mem::MMU &mem) {
+    this->ptm = &ptm;
+    this->mem = &mem;
+}
+
+bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
+    //read page fault
+    if(pmcb.operation_state == mem::PMCB::READ_OP){
+        std::cout << "Read Page Fault at address " << std::hex
+                  << std::setfill('0') << std::setw(7)
+                  << pmcb.next_vaddress << '\n';
+    }
+        //write page fault
+    else if (pmcb.operation_state == mem::PMCB::WRITE_OP){
+        int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
+
+        mem->set_kernel_PMCB();
+        bool didAlloc = ptm->allocate(1, pmcb.page_table_base, vaddr);
+        mem->set_user_PMCB(pmcb);
+
+        //allocation success retry the execution step
+        if(didAlloc){
+            return true;
+        }
+            //allocation fails, print the fault
+        else {
+            std::cout << "Write Page Fault at address " << std::hex
+                      << std::setfill('0') << std::setw(7)
+                      << pmcb.next_vaddress << '\n';
+            return false;
+        }
+    }
+
+    else {
+
+    }
+
+    return false;
+}
+
+
