@@ -267,7 +267,8 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
                   << std::setfill('0') << std::setw(7)
                   << pmcb.next_vaddress << '\n';
     }
-        //write page fault
+
+    //write page fault
     else if (pmcb.operation_state == mem::PMCB::WRITE_OP){
         int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
 

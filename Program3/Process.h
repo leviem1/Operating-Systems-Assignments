@@ -65,6 +65,8 @@ public:
      */
     virtual bool Run(const mem::PMCB &pmcb);
 
+    //TODO: Setter for quota
+
 private:
     PageTableManager *ptm;
     mem::MMU *mem;

@@ -9,7 +9,7 @@
 
 using namespace std;
     
-FrameAllocator::FrameAllocator(int frameNumber, mem::MMU &m) {
+FrameAllocator::FrameAllocator(mem::MMU &m) {
     
     mem = &m;
     
@@ -35,11 +35,11 @@ FrameAllocator::FrameAllocator(int frameNumber, mem::MMU &m) {
     
     //Initialize memory allocator variables (stored directly in mem)
     //Total number of frames in mem
-    uint32_t total = frameNumber;
+    uint32_t total = mem->get_frame_count();
     mem->movb(PAGE_FRAMES_TOTAL, &total, sizeof(total));
     
     //Number of frames already allocated
-    uint32_t available = frameNumber - 1;
+    uint32_t available = mem->get_frame_count() - 1;
     mem->movb(PAGE_FRAMES_AVAILABLE, &available, sizeof(available));
     
     //Address of first available frame
@@ -124,20 +124,20 @@ uint32_t FrameAllocator::get_available() const {
 string FrameAllocator::get_available_list_string() const {
     uint32_t addr;
     mem->movb(&addr, AVAILABLE_LIST_HEAD, sizeof(addr));
-    
+
     return build_string(addr);
 }
 
 string FrameAllocator::build_string(uint32_t addr) const {
     ostringstream ostring;
-    
+
     //If current addr is not 0xFFFFFFFF, then we can recurse
     if (addr != 0xFFFFFFFF) {
         uint32_t next;
         mem->movb(&next, addr, sizeof(next));
-        
+
         ostring << " " << hex << addr <<build_string(next);
     }
-    
+
     return ostring.str();
 }
