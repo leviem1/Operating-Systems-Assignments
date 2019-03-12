@@ -15,10 +15,6 @@
 
 #include <MMU.h>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
 
 #include "FrameAllocator.h"
 #include "Process.h"
@@ -70,27 +66,14 @@ int main(int argc, char** argv) {
 
     mem.enter_virtual_mode(kernel_pmcb);
     
-    std::vector<&Process> processes;
+    Process* processes[argc - 2];
     
-    std::vector<&int> test;
-    
-    for(int i = 0; i< 9;i++){
-        test.push_back(i);
+    for (int i = 2; i < argc; i ++) {
+        //TODO: Make sure that the new process isn't falling out of scope
+        processes[i] = new Process(i - 2, argv[i], mem, ptm);
     }
-    
-    for(int i = 0; i< 9;i++){
-        std::cout << test.at(i);
-    }
-    
-   /**
-    
-    for (int i = 2; i < argc; i ++){
-        Process p (argv[i], mem, ptm);
-        processes.push_back(p);
-    }
-    */
-    
 
+    processes[0]->Exec(stoi(argv[1]));
 
     return 0;
 }

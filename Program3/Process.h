@@ -74,7 +74,7 @@ public:
      * @param filename - name of the file we are reading from
      * @throws run time error if the file cannot be opened
      */
-    Process(const std::string &filename, mem::MMU &mem, PageTableManager &ptm);
+    Process(int pid, const std::string &filename, mem::MMU &mem, PageTableManager &ptm);
 
     //Process Destructor that closes the file and deals with memory leaks
     ~Process();
@@ -88,7 +88,7 @@ public:
     /* Exec function that acts as a parser for commands in the file
      * @return void
      */
-    void Exec();
+    bool Exec(int lineCount);
 
 private:
     std::fstream *file;
@@ -99,6 +99,7 @@ private:
     std::shared_ptr<WriteFaultHandler> *wf_handler;
     std::shared_ptr<PageFaultHandler> *pf_handler;
     int quotaCount;
+    int pid;
 
     /*cmp - compares a number of bytes at two given addresses
      * @param address1 - first address in comparison

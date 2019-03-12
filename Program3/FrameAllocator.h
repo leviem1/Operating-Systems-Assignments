@@ -19,7 +19,7 @@ public:
     /* Constructor for Frame Allocator
      * @param frameNumber - from file line 1, number of frames
      */
-    FrameAllocator(mem::MMU &m);
+    explicit FrameAllocator(mem::MMU &m);
     
     /* Allocate - allocates spaces in memory - sets allocated bytes to 0
      * @param count - the number of available page frames to allocate

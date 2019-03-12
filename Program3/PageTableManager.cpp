@@ -78,3 +78,11 @@ void PageTableManager::setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int cou
     }
 }
 
+void PageTableManager::releaseAll(mem::PMCB *pmcb) {
+    std::vector<mem::Addr> addresses;
+    //TODO: We will have to generate a list of alloc'd addresses
+    // from the page table, but we don't have to update the page table on dealloc
+    // maybe we need to know how many pages have been allocated?
+    fa->Release(addresses.size(), addresses);
+}
+

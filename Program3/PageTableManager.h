@@ -57,6 +57,12 @@ public:
      * otherwise -> 0
      */
     void setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status);
+
+    void releaseAll(mem::PMCB *pmcb);
+
+    uint32_t getAvailable() {
+        return fa->get_available();
+    }
    
     ~PageTableManager() = default;
     

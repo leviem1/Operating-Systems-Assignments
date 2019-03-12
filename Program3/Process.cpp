@@ -7,10 +7,12 @@
 
 #include "Process.h"
 
-Process::Process(const std::string &filename, mem::MMU &mem, PageTableManager &ptm) {
+Process::Process(int pid, const std::string &filename, mem::MMU &mem, PageTableManager &ptm) {
+    this->pid = pid;
     this->mem = &mem;
     this->ptm = &ptm;
-    quotaCount = 0;
+    //quota count set to one for page table
+    quotaCount = 1;
 
     //build the connections to the fault handlers
     wf_handler = new std::shared_ptr<WriteFaultHandler>(
@@ -27,6 +29,9 @@ Process::Process(const std::string &filename, mem::MMU &mem, PageTableManager &p
     if (!file || !file->is_open()) {
         throw std::runtime_error("File could not be opened");
     }
+
+    //Not sure if this will work at 0
+    vm_pmcb = new mem::PMCB(this->ptm->buildUserPageTable(0));
     
     //initialize member variables
     line = 1;
@@ -48,18 +53,16 @@ Process::~Process() {
     pf_handler = nullptr;
 }
 
-void Process::Exec(){
+bool Process::Exec(int lineCount){
     mem->SetWritePermissionFaultHandler(*wf_handler);
     mem->SetPageFaultHandler(*pf_handler);
 
-
-
     //extracts the lines from the file one at a time and performs commands
-    std::string readLine = "";
+    std::string readLine;
         
-    while (getline(*file, readLine)){
+    while (lineCount > 0 && getline(*file, readLine)){
         //prints out the line number and the command being read
-        std::cout << std::dec << line << ":" << readLine << "\n";
+        std::cout << std::dec << line << ":" << pid << ":" << readLine << "\n";
 
         std::istringstream s(readLine); 
         int memAddress; 
@@ -75,6 +78,7 @@ void Process::Exec(){
         //quota command
         if (word == "quota"){
             quota(memAddress);
+            lineCount--;
         } 
 
         //cmp command
@@ -85,6 +89,7 @@ void Process::Exec(){
             s >> std::hex >> count;
 
             cmp(memAddress, memAddress2, count);
+            lineCount--;
         }
 
         // set command
@@ -100,6 +105,7 @@ void Process::Exec(){
             }
                                    
             set(memAddress, v);
+            lineCount--;
         }
         
         //fill command
@@ -109,6 +115,7 @@ void Process::Exec(){
             s >> std::hex >> value;
             s >> std::hex >> count;
             fill(memAddress, value, count);
+            lineCount--;
         }
         
         //dup command
@@ -118,6 +125,7 @@ void Process::Exec(){
             s >> std::hex >> dest_address;
             s >> std::hex >> count;
             dup(memAddress, dest_address, count);
+            lineCount--;
         }
         
         //print command
@@ -126,6 +134,7 @@ void Process::Exec(){
             s >> std::hex >> count;
             
             print(memAddress, count);
+            lineCount--;
         }
 
         //perm command
@@ -136,14 +145,24 @@ void Process::Exec(){
             s >> status;
 
             perm(memAddress, count, status);
+            lineCount--;
         }
 
         //increments the counter for line. Leave at the end
         line++;
     }
 
-    //TODO: We will have to generate a list of alloc'd addresses
-    // from the page table, but we don't have to update the page table on dealloc
+    //if we reached the end of the file
+    if (file->bad()) {
+        ptm->releaseAll(vm_pmcb);
+        std::cout << std::dec << line << ":" << pid << ":TERMINATED, free page frames = " << ptm->getAvailable();
+        return true;
+    }
+
+    //if we were interrupted
+    else {
+        return false;
+    }
 }
 
 
@@ -239,7 +258,6 @@ void Process::print(int address, int count){
         //print the address that we just received
         std::cout << " " << std::setfill('0') << std::setw(2) << std::hex 
             << (int) val;
-        
     }
     
     std::cout << '\n';
