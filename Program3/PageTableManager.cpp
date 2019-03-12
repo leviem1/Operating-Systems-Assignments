@@ -28,7 +28,7 @@ Addr PageTableManager::buildUserPageTable(int vaddress) {
     return address[0];
 }
 
-bool PageTableManager::allocate(std::uint32_t count, mem::Addr page_table_base, uint32_t vaddr) {
+int PageTableManager::allocate(std::uint32_t count, mem::Addr page_table_base, uint32_t vaddr) {
     std::vector<uint32_t> page_frames;
     bool didAlloc = fa->Allocate(count, page_frames);
 
@@ -42,14 +42,15 @@ bool PageTableManager::allocate(std::uint32_t count, mem::Addr page_table_base, 
         //calculate the destination address
         std::uint32_t destAddr = offset + page_table_base;
         
-        //or the current address with the present and writeable bits
+        //or the current address with the present and writable bits
         std::uint32_t presAndwrit = page_frames.at(i) | mem::kPTE_PresentMask | mem::kPTE_WritableMask;
         
         //put the physical address stuff into the page table
         mem->movb(destAddr, &presAndwrit, sizeof(presAndwrit));
     }
-
-    return didAlloc;
+    
+     //return the number of pages successfully allocated
+    return didAlloc ? count : 0;
 }
 
 void PageTableManager::setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status) {

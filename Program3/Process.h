@@ -37,17 +37,12 @@ public:
      * @param pmcb  - the process pmcb where the fault was experienced
      * @return bool- will always return false - used for the errrors
      */
-    virtual bool Run(const mem::PMCB &pmcb) {
-        std::cout << "Write Permission Fault at address " << std::setfill('0')
-                  << std::setw(7) << std::hex << pmcb.next_vaddress << '\n';
-
-        return false;
-    }
+    virtual bool Run(const mem::PMCB &pmcb);
 };
 
 class PageFaultHandler: public mem::MMU::FaultHandler {
 public:
-    PageFaultHandler(PageTableManager &ptm, mem::MMU &mem);
+    PageFaultHandler(PageTableManager &ptm, mem::MMU &mem, int &quotaCount);
 
     //explicit deletes
     PageFaultHandler(const PageFaultHandler& other) = delete;
@@ -70,6 +65,7 @@ public:
 private:
     PageTableManager *ptm;
     mem::MMU *mem;
+    int *quotaCount;
 };
 
 class Process {
@@ -102,16 +98,7 @@ private:
     mem::PMCB *vm_pmcb;
     std::shared_ptr<WriteFaultHandler> *wf_handler;
     std::shared_ptr<PageFaultHandler> *pf_handler;
-
-    /**
-     * alloc - deals with the allocate command in a trace file.
-     * allocates parts of memory using the frame allocator 
-     * @param address - the starting virtual address to allocate, must be on a
-     * frame border
-     * @param pages - the number of pages to allocate
-     * @returns - void
-     */
-    void alloc(int address, int pages);
+    int quotaCount;
 
     /*cmp - compares a number of bytes at two given addresses
      * @param address1 - first address in comparison
@@ -144,6 +131,13 @@ private:
      * @return - void
      */
     void dup(int src_address, int dest_address, int count);
+    
+    /**
+     * quota - sets the max number of frames that can be allocated to a process
+     * @param count - the number of frames allowed for a process to have
+     * @return - void
+     */
+    void quota(int count);
 
     /* print - prints the status of memory in 16 byte intervals 
      * displays the address of each 16 byte chunks at the beginning of each row

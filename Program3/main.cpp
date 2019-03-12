@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
     PageTableManager ptm(mem, allocator);
 
     //check for the proper number of args
-    if (argc != 2) {
-        cerr << "Usage: Program3 file" << endl;
+    if (argc <= 2) {
+        cerr << "Usage: Program3 timeslice file1 [file2] ..." << endl;
         
         return 1;
     }
@@ -69,9 +69,28 @@ int main(int argc, char** argv) {
 //----------------------Enter Virtual Mode/Execute File-----------------//
 
     mem.enter_virtual_mode(kernel_pmcb);
+    
+    std::vector<&Process> processes;
+    
+    std::vector<&int> test;
+    
+    for(int i = 0; i< 9;i++){
+        test.push_back(i);
+    }
+    
+    for(int i = 0; i< 9;i++){
+        std::cout << test.at(i);
+    }
+    
+   /**
+    
+    for (int i = 2; i < argc; i ++){
+        Process p (argv[i], mem, ptm);
+        processes.push_back(p);
+    }
+    */
+    
 
-    Process p(argv[1], mem, ptm);
-    p.Exec();
 
     return 0;
 }

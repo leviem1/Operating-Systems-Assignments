@@ -45,7 +45,7 @@ public:
      * @param vaddr - allocate the frames starting at this address
      * @return - bool of whether the memory was successfully allocated or not
      */
-    bool allocate(std::uint32_t count, mem::Addr page_table_base, std::uint32_t vaddr);
+    int allocate(std::uint32_t count, mem::Addr page_table_base, std::uint32_t vaddr);
     
     /**
      * setWritable - sets present entries writable bit to status to adjust

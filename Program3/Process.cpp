@@ -10,13 +10,14 @@
 Process::Process(const std::string &filename, mem::MMU &mem, PageTableManager &ptm) {
     this->mem = &mem;
     this->ptm = &ptm;
+    quotaCount = 0;
 
     //build the connections to the fault handlers
     wf_handler = new std::shared_ptr<WriteFaultHandler>(
             std::make_shared<WriteFaultHandler>());
 
     pf_handler = new std::shared_ptr<PageFaultHandler> (
-            std::make_shared<PageFaultHandler>(ptm, mem));
+            std::make_shared<PageFaultHandler>(ptm, mem, quotaCount));
 
     //open the file with proper errors
     file = new std::fstream();
@@ -71,12 +72,9 @@ void Process::Exec(){
         s >> word;
         
         //determine which command to execute
-        //alloc command
-        if (word == "alloc"){
-            int pages;
-            s >> std::hex >> pages;
-
-            alloc(memAddress, pages);
+        //quota command
+        if (word == "quota"){
+            quota(memAddress);
         } 
 
         //cmp command
@@ -148,18 +146,7 @@ void Process::Exec(){
     // from the page table, but we don't have to update the page table on dealloc
 }
 
-void Process::alloc(int address, int pages) {
-    //if we don't have a pmcb yet make one
-    if (!vm_pmcb) {
-        vm_pmcb = new mem::PMCB(ptm->buildUserPageTable(address));
-    }
-    
-    //switch to kernel mode, allocate pages, and go back to user mode
-    mem->set_kernel_PMCB();
-    ptm->allocate(pages, vm_pmcb->page_table_base, address);
-    mem->set_user_PMCB(*vm_pmcb);
 
-}
 
 void Process::cmp(int address1, int address2, int count) {
     //check each memory address
@@ -227,6 +214,10 @@ void Process::perm(int address, int pages, bool status) {
     mem->set_user_PMCB(*vm_pmcb);
 }
 
+void Process::quota(int count){
+    quotaCount = count;
+}
+
 void Process::print(int address, int count){
     
     for(int i = 0; i < count; i ++){
@@ -255,9 +246,10 @@ void Process::print(int address, int count){
     
 }
 
-PageFaultHandler::PageFaultHandler(PageTableManager &ptm, mem::MMU &mem) {
+PageFaultHandler::PageFaultHandler(PageTableManager &ptm, mem::MMU &mem, int &quotaCount) {
     this->ptm = &ptm;
     this->mem = &mem;
+    this->quotaCount = &quotaCount;
 }
 
 bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
@@ -273,11 +265,12 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
         int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
 
         mem->set_kernel_PMCB();
-        bool didAlloc = ptm->allocate(1, pmcb.page_table_base, vaddr);
+        int allocCount = ptm->allocate(1, pmcb.page_table_base, vaddr);
+        quotaCount -= allocCount;
         mem->set_user_PMCB(pmcb);
 
         //allocation success retry the execution step
-        if(didAlloc){
+        if(allocCount > 0){
             return true;
         }
             //allocation fails, print the fault
@@ -292,6 +285,13 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
     else {
 
     }
+
+    return false;
+}
+
+bool WriteFaultHandler::Run(const mem::PMCB &pmcb) {
+    std::cout << "Write Permission Fault at address " << std::setfill('0')
+            << std::setw(7) << std::hex << pmcb.next_vaddress << '\n';
 
     return false;
 }
