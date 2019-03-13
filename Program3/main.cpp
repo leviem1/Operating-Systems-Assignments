@@ -84,8 +84,6 @@ int main(int argc, char** argv) {
     
     s.roundRobin();
 
-    //processes.front().Exec(stoi(argv[1]));
-
     return 0;
 }
 

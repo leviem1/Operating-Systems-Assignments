@@ -29,21 +29,7 @@ void Scheduler::roundRobin(){
             }
         }
         
-        /*
-        //execute the process for the time slice
-        bool complete = processes->begin()->Exec(timeSlice);
         
-        //if it terminates remove it
-        if (complete){
-            processes->pop_front();
-        } 
-        //otherwise add it to the back and delete from the front
-        else {
-            
-            processes->emplace_back(processes->front());
-            processes->pop_front();
-        }
-         */
     }
     
 }
