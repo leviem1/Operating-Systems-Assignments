@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     }
     
     //build the scheduler
-    int timeSlice = strtol(argv[1], NULL, 10);
+    int timeSlice = stoi(argv[1]);
     Scheduler s(timeSlice, processes);
     
     s.roundRobin();

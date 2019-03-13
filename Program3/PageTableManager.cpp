@@ -87,6 +87,8 @@ void PageTableManager::releaseAll(mem::PMCB *pmcb) {
 }
 
 void PageTableManager::findAllocatedAddresses(mem::Addr page_table_base, std::vector<uint32_t> &addresses) {
+    addresses.push_back(page_table_base);
+
     for (int i = 0; i < kPageTableSizeBytes; i += 4) {
         mem::Addr entryAddr = i + page_table_base;
 

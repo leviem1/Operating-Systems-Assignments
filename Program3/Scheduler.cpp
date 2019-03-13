@@ -21,11 +21,11 @@ void Scheduler::roundRobin(){
     
     while (!processes->empty()){
         
-        for (std::list<Process>::iterator it = processes->begin(); it != processes->end(); it++){
+        for (auto it = processes->begin(); it != processes->end(); it++){
             bool complete = it->Exec(timeSlice);
             
             if(complete){
-                processes->remove(*it);
+                processes->erase(it++);
             }
         }
         
