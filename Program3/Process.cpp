@@ -35,9 +35,8 @@ Process::Process(int pid, const std::string &filename, mem::MMU &mem, PageTableM
 
     //Not sure if this will work at 0
     this->mem->set_kernel_PMCB();
-
     vm_pmcb = new mem::PMCB(this->ptm->buildUserPageTable(0));
-
+    this->ptm->allocate(1, vm_pmcb->page_table_base, 0);
     this->mem->set_user_PMCB(*vm_pmcb);
     
     //initialize member variables
