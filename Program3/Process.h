@@ -42,7 +42,7 @@ public:
 
 class PageFaultHandler: public mem::MMU::FaultHandler {
 public:
-    PageFaultHandler(PageTableManager &ptm, mem::MMU &mem, int &quotaCount);
+    PageFaultHandler(PageTableManager &ptm, mem::MMU &mem, int &quotaCount, int &check);
 
     //explicit deletes
     PageFaultHandler(const PageFaultHandler& other) = delete;
@@ -65,6 +65,7 @@ private:
     mem::MMU *mem;
     int *quotaCount;
     int allocatedCount;
+    int *check;
 };
 
 class Process {
@@ -99,6 +100,7 @@ private:
     std::shared_ptr<PageFaultHandler> *pf_handler;
     int quotaCount;
     int pid;
+    int check;
 
     /*cmp - compares a number of bytes at two given addresses
      * @param address1 - first address in comparison

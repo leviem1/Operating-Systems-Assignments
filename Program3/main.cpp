@@ -16,9 +16,11 @@
 #include <MMU.h>
 #include <iostream>
 #include <list>
+#include <stdlib.h>
 
 #include "FrameAllocator.h"
 #include "Process.h"
+#include "Scheduler.h"
 
 using namespace std;
 using namespace mem;
@@ -67,13 +69,22 @@ int main(int argc, char** argv) {
 
     mem.enter_virtual_mode(kernel_pmcb);
     
+    
+    
+    //collect a list of all the processes
     list<Process> processes;
     
     for (int i = 2; i < argc; i ++) {
         processes.emplace_back(i - 1, argv[i], mem, ptm);
     }
+    
+    //build the scheduler
+    int timeSlice = strtol(argv[1], NULL, 10);
+    Scheduler s(timeSlice, processes);
+    
+    s.roundRobin();
 
-    processes.front().Exec(stoi(argv[1]));
+    //processes.front().Exec(stoi(argv[1]));
 
     return 0;
 }

@@ -13,13 +13,16 @@ Process::Process(int pid, const std::string &filename, mem::MMU &mem, PageTableM
     this->ptm = &ptm;
     //quota count set to one for page table
     quotaCount = 1;
+    
+    //set check 
+    check = 0;
 
     //build the connections to the fault handlers
     wf_handler = new std::shared_ptr<WriteFaultHandler>(
             std::make_shared<WriteFaultHandler>());
 
     pf_handler = new std::shared_ptr<PageFaultHandler> (
-            std::make_shared<PageFaultHandler>(ptm, mem, quotaCount));
+            std::make_shared<PageFaultHandler>(ptm, mem, quotaCount, check));
 
     //open the file with proper errors
     file = new std::fstream();
@@ -155,23 +158,37 @@ bool Process::Exec(int lineCount){
 
         //increments the counter for line. Leave at the end
         line++;
+        if(check == 0){
+            continue;
+        } else {
+            break;
+        }
     }
 
     //if we reached the end of the file
     if (file->eof()) {
         mem->set_kernel_PMCB();
         ptm->releaseAll(vm_pmcb);
-        std::cout << std::dec << line - 1 << ":" << pid << ":TERMINATED, free page frames = " << std::hex << ptm->getAvailable() << "\n";
+        std::cout << std::dec << line - 1 << ":" << pid 
+                << ":TERMINATED, free page frames = " 
+                << std::hex << ptm->getAvailable() << "\n";
         return true;
     }
 
-    //if we were interrupted
+    //if we exceed the quota, terminate the process
+    else if (check == 1) {
+        mem->set_kernel_PMCB();
+        ptm->releaseAll(vm_pmcb);
+        std::cout << "Quota exceeded, process terminated, free page frames = " 
+                << std::hex << ptm->getAvailable() << "\n";
+        return true;
+    }
+    
+    //otherwise we were interrupted
     else {
         return false;
     }
 }
-
-
 
 void Process::cmp(int address1, int address2, int count) {
     //check each memory address
@@ -270,10 +287,11 @@ void Process::print(int address, int count){
     
 }
 
-PageFaultHandler::PageFaultHandler(PageTableManager &ptm, mem::MMU &mem, int &quotaCount) {
+PageFaultHandler::PageFaultHandler(PageTableManager &ptm, mem::MMU &mem, int &quotaCount, int &check) {
     this->ptm = &ptm;
     this->mem = &mem;
     this->quotaCount = &quotaCount;
+    this->check = &check;
 }
 
 bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
@@ -313,9 +331,7 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
 
         //we've exceeded our quota so print the fault
         else {
-            std::cout << "Write Page Fault at address " << std::hex
-                      << std::setfill('0') << std::setw(7)
-                      << pmcb.next_vaddress << '\n';
+            *check = 1;
 
             return false;
         }
