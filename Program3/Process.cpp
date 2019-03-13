@@ -31,7 +31,11 @@ Process::Process(int pid, const std::string &filename, mem::MMU &mem, PageTableM
     }
 
     //Not sure if this will work at 0
+    this->mem->set_kernel_PMCB();
+
     vm_pmcb = new mem::PMCB(this->ptm->buildUserPageTable(0));
+
+    this->mem->set_user_PMCB(*vm_pmcb);
     
     //initialize member variables
     line = 1;
@@ -54,6 +58,7 @@ Process::~Process() {
 }
 
 bool Process::Exec(int lineCount){
+    mem->set_user_PMCB(*vm_pmcb);
     mem->SetWritePermissionFaultHandler(*wf_handler);
     mem->SetPageFaultHandler(*pf_handler);
 
@@ -153,9 +158,10 @@ bool Process::Exec(int lineCount){
     }
 
     //if we reached the end of the file
-    if (file->bad()) {
+    if (file->eof()) {
+        mem->set_kernel_PMCB();
         ptm->releaseAll(vm_pmcb);
-        std::cout << std::dec << line << ":" << pid << ":TERMINATED, free page frames = " << ptm->getAvailable();
+        std::cout << std::dec << line - 1 << ":" << pid << ":TERMINATED, free page frames = " << std::hex << ptm->getAvailable() << "\n";
         return true;
     }
 
@@ -276,35 +282,48 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
         std::cout << "Read Page Fault at address " << std::hex
                   << std::setfill('0') << std::setw(7)
                   << pmcb.next_vaddress << '\n';
+
+        return false;
     }
 
     //write page fault
     else if (pmcb.operation_state == mem::PMCB::WRITE_OP){
-        int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
+        if (*quotaCount > allocatedCount) {
+            int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
 
-        mem->set_kernel_PMCB();
-        int allocCount = ptm->allocate(1, pmcb.page_table_base, vaddr);
-        quotaCount -= allocCount;
-        mem->set_user_PMCB(pmcb);
+            mem->set_kernel_PMCB();
+            int allocCount = ptm->allocate(1, pmcb.page_table_base, vaddr);
+            allocatedCount += allocCount;
+            mem->set_user_PMCB(pmcb);
 
-        //allocation success retry the execution step
-        if(allocCount > 0){
-            return true;
-        }
+            //allocation success retry the execution step
+            if (allocCount > 0) {
+                return true;
+            }
+
             //allocation fails, print the fault
+            else {
+                std::cout << "Write Page Fault at address " << std::hex
+                          << std::setfill('0') << std::setw(7)
+                          << pmcb.next_vaddress << '\n';
+
+                return false;
+            }
+        }
+
+        //we've exceeded our quota so print the fault
         else {
             std::cout << "Write Page Fault at address " << std::hex
                       << std::setfill('0') << std::setw(7)
                       << pmcb.next_vaddress << '\n';
+
             return false;
         }
     }
 
     else {
-
+        return false;
     }
-
-    return false;
 }
 
 bool WriteFaultHandler::Run(const mem::PMCB &pmcb) {

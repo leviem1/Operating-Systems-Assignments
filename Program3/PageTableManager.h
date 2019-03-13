@@ -67,6 +67,7 @@ public:
     ~PageTableManager() = default;
     
 private:
+    void findAllocatedAddresses(mem::Addr page_table_base, std::vector<mem::Addr> &addresses);
     mem::MMU *mem;
     FrameAllocator *fa;
 };
