@@ -16,12 +16,12 @@ PageTableManager::PageTableManager(MMU &mem, FrameAllocator &fa) {
     this->fa = &fa;
 }
 
-Addr PageTableManager::buildUserPageTable(int vaddress) {
+Addr PageTableManager::buildUserPageTable() {
     std::vector<Addr> address;
     fa->Allocate(1, address);
 
     PageTable page_table;
-    Addr pt_offset = (vaddress >> kPageSizeBits) & kPageTableIndexMask;
+    Addr pt_offset = 0 & kPageTableIndexMask;
     page_table.at(pt_offset) = address[0] | kPTE_PresentMask | kPTE_WritableMask;
     mem->movb(address[0], &page_table, kPageTableSizeBytes);
 
@@ -89,8 +89,8 @@ void PageTableManager::releaseAll(mem::PMCB *pmcb) {
 void PageTableManager::findAllocatedAddresses(mem::Addr page_table_base, std::vector<uint32_t> &addresses) {
     addresses.push_back(page_table_base);
 
-    for (int i = 0; i < kPageTableSizeBytes; i += 4) {
-        mem::Addr entryAddr = i + page_table_base;
+    for (int i = 0; i < kPageTableEntries; i ++) {
+        mem::Addr entryAddr = (i * 4) + page_table_base;
 
         uint32_t entry;
         mem->movb(&entry, entryAddr, sizeof(entry));

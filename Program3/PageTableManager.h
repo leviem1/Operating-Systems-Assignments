@@ -31,10 +31,9 @@ public:
 
     /**
      * buildUserPageTable - builds a user page table for the process
-     * @param vaddr - the virtual address we should start at
      * @return - the place in physical memory where we built the table
      */
-    mem::Addr buildUserPageTable(int vaddr);
+    mem::Addr buildUserPageTable();
     
     /**
      * allocate - calls the frame allocator if needed and then

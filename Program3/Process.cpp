@@ -35,8 +35,7 @@ Process::Process(int pid, const std::string &filename, mem::MMU &mem, PageTableM
 
     //Not sure if this will work at 0
     this->mem->set_kernel_PMCB();
-    vm_pmcb = new mem::PMCB(this->ptm->buildUserPageTable(0));
-    this->ptm->allocate(1, vm_pmcb->page_table_base, 0);
+    vm_pmcb = new mem::PMCB(this->ptm->buildUserPageTable());
     this->mem->set_user_PMCB(*vm_pmcb);
     
     //initialize member variables
@@ -168,7 +167,7 @@ bool Process::Exec(int lineCount){
     if (file->eof()) {
         mem->set_kernel_PMCB();
         ptm->releaseAll(vm_pmcb);
-        std::cout << std::dec << line - 1 << ":" << pid 
+        std::cout << std::dec << line - 1 << ":" << pid
                 << ":TERMINATED, free page frames = " 
                 << std::hex << ptm->getAvailable() << "\n";
         return true;
@@ -178,7 +177,7 @@ bool Process::Exec(int lineCount){
     else if (check == 1) {
         mem->set_kernel_PMCB();
         ptm->releaseAll(vm_pmcb);
-        std::cout << "Quota exceeded, process terminated, free page frames = " 
+        std::cout << "Quota exceeded, process terminated, free page frames = "
                 << std::hex << ptm->getAvailable() << "\n";
         return true;
     }
@@ -306,9 +305,8 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
     //write page fault
     else if (pmcb.operation_state == mem::PMCB::WRITE_OP){
         if (*quotaCount > allocatedCount) {
-            int vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
+            mem::Addr vaddr = (pmcb.next_vaddress / 0x4000) * 0x4000;
 
-            mem->set_kernel_PMCB();
             int allocCount = ptm->allocate(1, pmcb.page_table_base, vaddr);
             allocatedCount += allocCount;
             mem->set_user_PMCB(pmcb);
