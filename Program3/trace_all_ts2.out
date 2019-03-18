@@ -80,12 +80,12 @@
 0404000: 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22
 14:4:* Next line should generate a Write Permission Fault on the second byte
 15:4:403fff  set  99 aa
-Write Permission Fault at address 404000
+Write Permission Fault at address 0404000
 13:5:* Each of the following lines should generate a read Page Fault
 14:5:1000000 cmp  ffc000 1
 Read Page Fault at address 1000000
 15:5:b04000  cmp  754000 4001
-Read Page Fault at address b04000
+Read Page Fault at address 0b04000
 18:1:* Store some values and compare
 19:1:2341e01 set b1 b2 b3 b4 b5
 20:1:2341e02 set c2
@@ -98,9 +98,9 @@ Read Page Fault at address b04000
 0403ff8: 11 11 11 11 11 11 11 99 22 22 22 22 22 22 22 22
 17:4:* Next line should generate a Write Permission Fault
 18:4:403ff8  fill 57 10
-Write Permission Fault at address 404000
+Write Permission Fault at address 0404000
 16:5:403ff8  print 10
-0403ff8: 00 00 00 00 00 00 00 00Read Page Fault at address 404000
+0403ff8: 00 00 00 00 00 00 00 00Read Page Fault at address 0404000
 17:5:* Test that dup completes up to a read page fault
 18:5:* (dup read page faults, set, print, and fill should succeed)
 19:5:75fffe  set a2 b3
@@ -119,7 +119,7 @@ Write Permission Fault at address 404000
 0403ff8: 57 57 57 57 57 57 57 57 22 22 22 22 22 22 22 22
 20:4:* Next line should generate a Write Permission Fault
 21:4:400000  dup 407ff8 8
-Write Permission Fault at address 407ff8
+Write Permission Fault at address 0407ff8
 20:5:b03ffc  fill c4 4
 21:5:b03ff0  print 10
 0b03ff0: 00 00 00 00 00 00 00 00 00 00 00 00 c4 c4 c4 c4
@@ -137,11 +137,11 @@ Write Permission Fault at address 407ff8
 24:4:* Set 2nd page writable; following lines should run without faults or errors
 25:4:404000  perm 1  1
 22:5:75fffe  dup b03ff0 4
-Read Page Fault at address 760000
+Read Page Fault at address 0760000
 23:5:* This print statement should page fault after 10 bytes
 24:5:b03ff0  print 20
 0b03ff0: a2 b3 00 00 00 00 00 00 00 00 00 00 c4 c4 c4 c4
-0b04000:Read Page Fault at address b04000
+0b04000:Read Page Fault at address 0b04000
 26:1:2342af2 set 55 55 55
 27:1:2341e00 cmp 2342af0 10
 25:2:166400f set ab
@@ -156,7 +156,7 @@ Read Page Fault at address 760000
 26:5:* generate one mismatch and then a read page fault.
 27:5:400208  cmp b03fff 8
 cmp error, addr1 = 0400208, value = 00, addr2 = 0b03fff, value = c4
-Read Page Fault at address b04000
+Read Page Fault at address 0b04000
 28:5:* The next line should cause the process to terminate with quota exceeded
 29:5:b040ff  set 00
 Quota exceeded, process terminated, free page frames = 6e
