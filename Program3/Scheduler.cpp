@@ -19,18 +19,20 @@ Scheduler::~Scheduler() {
 
 void Scheduler::roundRobin(){
     
+    
     while (!processes->empty()){
-        
-        for (auto it = processes->begin(); it != processes->end(); it++){
+        auto it = processes->begin();
+
+        while (it != processes->end()) {
             bool complete = it->Exec(timeSlice);
             
             if(complete){
-                processes->erase(it++);
+                it = processes->erase(it);
+            }
+            else {
+                it ++;
             }
         }
-        
-        
-    }
-    
+    }  
 }
 
