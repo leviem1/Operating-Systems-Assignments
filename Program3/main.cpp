@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
     int timeSlice = stoi(argv[1]);
     Scheduler s(timeSlice, processes);
     
+    //run the algorithm
     s.roundRobin();
 
     return 0;

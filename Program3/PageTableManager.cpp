@@ -20,11 +20,6 @@ Addr PageTableManager::buildUserPageTable() {
     std::vector<Addr> address;
     fa->Allocate(1, address);
 
-    /*PageTable page_table;
-    Addr pt_offset = 0 & kPageTableIndexMask;
-    page_table.at(pt_offset) = address[0] | kPTE_PresentMask | kPTE_WritableMask;
-    mem->movb(address[0], &page_table, kPageTableSizeBytes);
-*/
     return address[0];
 }
 

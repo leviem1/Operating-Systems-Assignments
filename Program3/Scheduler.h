@@ -20,13 +20,24 @@
 
 class Scheduler {
 public:
+    /**
+     * Builds a scheduler object
+     * @param timeSlice - given from the arguments
+     * @param processes - list of all the processes gathered from the 
+     * files specified as arguments
+     */
     Scheduler(int timeSlice, std::list<Process> &processes);
+    
     Scheduler(const Scheduler &other) = delete;  // no copy constructor
     Scheduler(Scheduler &&other) = delete;       // no move constructor
     Scheduler operator=(const Scheduler &other) = delete;  // no copy assign
     Scheduler operator=(Scheduler &&other) = delete;       // no move assign
-    ~Scheduler();
+    ~Scheduler() = default;
     
+    /**roundRobin - runs a round robin style algorithm on the processes
+     * using the stored timeslice
+     * @return void
+     */
     void roundRobin();
     
 private:

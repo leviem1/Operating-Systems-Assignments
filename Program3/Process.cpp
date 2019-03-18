@@ -309,7 +309,6 @@ bool PageFaultHandler::Run(const mem::PMCB &pmcb) {
 
             int allocCount = ptm->allocate(1, pmcb.page_table_base, vaddr);
             allocatedCount += allocCount;
-            //mem->set_user_PMCB(pmcb);
 
             //allocation success retry the execution step
             if (allocCount > 0) {

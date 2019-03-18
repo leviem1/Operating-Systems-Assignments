@@ -13,19 +13,18 @@ Scheduler::Scheduler(int timeSlice, std::list<Process> &processes) {
     this->processes = &processes;
 }
 
-
-Scheduler::~Scheduler() {
-}
-
 void Scheduler::roundRobin(){
     
-    
+    //go through processes until nothing left
     while (!processes->empty()){
         auto it = processes->begin();
 
+        //while we haven't reached the end of the list
         while (it != processes->end()) {
+            //execute the process 
             bool complete = it->Exec(timeSlice);
             
+            //if it's done remove it otherwise move the iterator up
             if(complete){
                 it = processes->erase(it);
             }

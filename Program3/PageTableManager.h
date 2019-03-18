@@ -57,6 +57,10 @@ public:
      */
     void setWritable(mem::PMCB *pmcb, std::uint32_t vaddr, int count, bool status);
 
+    /**
+     * releaseAll - frees all the page frames allocated for that process
+     * @param pmcb - the pmcb being used by the process
+     */
     void releaseAll(mem::PMCB *pmcb);
 
     uint32_t getAvailable() {
@@ -66,7 +70,16 @@ public:
     ~PageTableManager() = default;
     
 private:
-    void findAllocatedAddresses(mem::Addr page_table_base, std::vector<mem::Addr> &addresses);
+    
+    /**findAllocatedAddresses
+     * fills a vector with a list of addresses that need to be released
+     * 
+     * @param page_table_base - vaddress for the base of the page table
+     * @param addresses - addresses that need to be released
+     */
+    void findAllocatedAddresses(mem::Addr page_table_base, 
+            std::vector<mem::Addr> &addresses);
+    
     mem::MMU *mem;
     FrameAllocator *fa;
 };
